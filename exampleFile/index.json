@@ -1,0 +1,248 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 5,
+    "pending": 0,
+    "failures": 0,
+    "testsRegistered": 5,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false,
+    "start": "2023-12-05T04:29:41.905Z",
+    "end": "2023-12-05T04:30:19.617Z",
+    "duration": 37712
+  },
+  "results": [
+    {
+      "uuid": "7fa9031e-670d-4c56-9c18-5f497242ced8",
+      "title": "",
+      "fullFile": "cypress/e2e/features/UI/Tests/Dashboard/Dashboard.spec.js",
+      "file": "cypress/e2e/features/UI/Tests/Dashboard/Dashboard.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "ed199128-26a0-430c-9469-c17f7dfa5b74",
+          "title": "Pay Run Dashboard Testing ",
+          "fullFile": "cypress/e2e/features/UI/Tests/Dashboard/Dashboard.spec.js",
+          "file": "cypress/e2e/features/UI/Tests/Dashboard/Dashboard.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "59078596-85bb-41d9-948a-2407bd05b709",
+              "title": "TFS 1381386 Calculation Statuses card - Refresh",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "The Card should have title Calculation Statuses",
+                  "fullTitle": "Pay Run Dashboard Testing  TFS 1381386 Calculation Statuses card - Refresh The Card should have title Calculation Statuses",
+                  "timedOut": null,
+                  "duration": 8548,
+                  "state": "passed",
+                  "speed": "medium",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const expectTitle = \"Calculation Statuses\";\ncy.get(\"#calculationStatusCard\").within(() => {\n  cy.get(\"h4.evrHeading4\").should(\"have.text\", expectTitle);\n});",
+                  "err": {},
+                  "uuid": "edb3524e-19af-470e-8e29-85dd669f3bb2",
+                  "parentUUID": "59078596-85bb-41d9-948a-2407bd05b709",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "The Refresh should be enable",
+                  "fullTitle": "Pay Run Dashboard Testing  TFS 1381386 Calculation Statuses card - Refresh The Refresh should be enable",
+                  "timedOut": null,
+                  "duration": 6296,
+                  "state": "passed",
+                  "speed": "medium",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"Dashboard-Icon-CalculationStatusesRefresh\"]').and(\"be.visible\");",
+                  "err": {},
+                  "uuid": "0c0f91f9-1bb3-437a-b8f5-e4f33f6f76e8",
+                  "parentUUID": "59078596-85bb-41d9-948a-2407bd05b709",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "edb3524e-19af-470e-8e29-85dd669f3bb2",
+                "0c0f91f9-1bb3-437a-b8f5-e4f33f6f76e8"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 14844,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "4e35e6bd-b156-4f3e-884e-7bc63e462a11",
+              "title": "TFS 1381387 Dashboard - Calculation Statuses card - Pie Graph [Unit Test] [Automation Test]",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "The pie chart should be visible",
+                  "fullTitle": "Pay Run Dashboard Testing  TFS 1381387 Dashboard - Calculation Statuses card - Pie Graph [Unit Test] [Automation Test] The pie chart should be visible",
+                  "timedOut": null,
+                  "duration": 6941,
+                  "state": "passed",
+                  "speed": "medium",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.wait(800);\ncy.get(\"#calculationStatusPieChartContainerId\").should(\"be.visible\");",
+                  "err": {},
+                  "uuid": "868678a4-84f5-42a3-979c-2c076dc71a56",
+                  "parentUUID": "4e35e6bd-b156-4f3e-884e-7bc63e462a11",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "The pie chart label should be ",
+                  "fullTitle": "Pay Run Dashboard Testing  TFS 1381387 Dashboard - Calculation Statuses card - Pie Graph [Unit Test] [Automation Test] The pie chart label should be ",
+                  "timedOut": null,
+                  "duration": 7640,
+                  "state": "passed",
+                  "speed": "medium",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.wait(1000);\nconst expectResult = [\n//{ label: \"Not Started\", percent: \"24\" },\n{\n  label: \"Calculating\",\n  percent: \"47\"\n}, {\n  label: \"Calculated\",\n  percent: \"16\"\n}, {\n  label: \"Committed\",\n  percent: \"7\"\n}, {\n  label: \"Blocked\",\n  percent: \"5\"\n}];\nexpectResult.forEach(item => {\n  const {\n    label,\n    percent\n  } = item;\n  // cy.get(`[data-testid=\"${label}\"]`).within(() => {\n  //     cy.get(\"span[class*='text-bold']\").should(\"have.text\", label);\n  //     cy.get(\"span\").should(\"have.text\", `${percent}%`);\n  // });\n});",
+                  "err": {},
+                  "uuid": "a0ff840c-e662-4041-ac84-02f76d98ada0",
+                  "parentUUID": "4e35e6bd-b156-4f3e-884e-7bc63e462a11",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "868678a4-84f5-42a3-979c-2c076dc71a56",
+                "a0ff840c-e662-4041-ac84-02f76d98ada0"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 14581,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "fc21e942-ce8a-424a-b047-25e1c157f7ca",
+              "title": "LE - 2909 Dashboard navigation see all employee navigation should wokr",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "",
+                  "fullTitle": "Pay Run Dashboard Testing  LE - 2909 Dashboard navigation see all employee navigation should wokr ",
+                  "timedOut": null,
+                  "duration": 6376,
+                  "state": "passed",
+                  "speed": "medium",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get(\"[data-testid='Dashboard-Button-SeeAllEmployees']\").click();\ncy.get(\"[data-testid='PayRunSlideout-Icon-Preview']\").should(\"be.visible\");\ncy.get(\"div[class*='open']\").find('[data-testId=\"Preview-Tab-Employees\"]').should(\"have.text\", \"Employees\");",
+                  "err": {},
+                  "uuid": "5b35a43e-3ec9-4dcb-8beb-255568ad893e",
+                  "parentUUID": "fc21e942-ce8a-424a-b047-25e1c157f7ca",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "5b35a43e-3ec9-4dcb-8beb-255568ad893e"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 6376,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/reports/.jsons",
+        "overwrite": false,
+        "charts": true,
+        "reportPageTitle": "payroll-intelligence-Ui-test",
+        "embeddedScreenshots": true,
+        "inlineAssets": false,
+        "saveAllAttempts": false,
+        "debug": true,
+        "saveJson": true,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
