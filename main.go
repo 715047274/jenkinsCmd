@@ -6,57 +6,64 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite"
-	"github.com/golang-migrate/migrate/v4/source/httpfs"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
 	"net/http"
 )
 
 var DB *sql.DB
-
 var migrations embed.FS
 
 const schemaVersion = 1
 
-func ensureSchema(db *sql.DB) error {
-	sourceInstance, err := httpfs.New(http.FS(migrations), "migrations")
+func ensureSchema() {
+	//sourceInstance, err := httpfs.New(http.FS(migrations), "migrations")
+	//if err != nil {
+	//	return fmt.Errorf("invalid source instance, %w", err)
+	//}
+	//targetInstance, err := sqlite.WithInstance(db, new(sqlite.Config))
+	//if err != nil {
+	//	return fmt.Errorf("invalid target sqlite instance, %w", err)
+	//}
+	//m, err := migrate.NewWithInstance(
+	//	"httpfs", sourceInstance, "sqlite", targetInstance)
+	//if err != nil {
+	//	return fmt.Errorf("failed to initialize migrate instance, %w", err)
+	//}
+	//err = m.Migrate(schemaVersion)
+	//if err != nil && err != migrate.ErrNoChange {
+	//	return err
+	//}
+	//return sourceInstance.Close()
+	migration, err := migrate.New("db/migration", "sqlite3://sqliteDemo.db")
 	if err != nil {
-		return fmt.Errorf("invalid source instance, %w", err)
+		// log.Fatal().Err(err).Msg("cannot create new migrate instance")
+		fmt.Errorf("invalid source instance, %w", err)
 	}
-	driver, err := sqlite.WithInstance(db, &sqlite.Config{})
-	if err != nil {
-		return fmt.Errorf("invalid target sqlite instance, %w", err)
-	}
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://./db/migration", "localGin", driver)
-	if err != nil {
-		return fmt.Errorf("failed to initialize migrate instance, %w", err)
-	}
-	fmt.Println("Up-----------")
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		return err
-	}
-	return sourceInstance.Close()
-}
 
+	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
+		// log.Fatal().Err(err).Msg("failed to run migrate up")
+		fmt.Errorf("failed to initialize migrate instance, %w", err)
+	}
+
+	//log.Info().Msg("db migrated successfully")
+}
 func init() {
+	ensureSchema()
 	db, err := sql.Open("sqlite3", "./sqliteDemo.db")
 	if err != nil {
 		fmt.Println(err)
 	}
-	if err := ensureSchema(db); err != nil {
-		log.Fatalln("migration failed")
-	}
 	fmt.Println("DB ..... Created")
+	//if err := ensureSchema(db); err != nil {
+	//	log.Fatalln("migration failed")
+	//}
 	DB = db
 }
 
 func setupRoute() *gin.Engine {
 	r := gin.Default()
 	r.GET("/getAccounts", getAccounts)
-
 	return r
 }
 
