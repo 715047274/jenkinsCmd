@@ -18,84 +18,10 @@ var DB *sql.DB
 
 //var migrations embed.FS
 
-const schemaVersion = 1
-
-func ensureSchema(db *sql.DB) {
-	//sourceInstance, err := httpfs.New(http.FS(migrations), "migrations")
-	//if err != nil {
-	//	return fmt.Errorf("invalid source instance, %w", err)
-	//}
-	//targetInstance, err := sqlite.WithInstance(db, new(sqlite.Config))
-	//if err != nil {
-	//	return fmt.Errorf("invalid target sqlite instance, %w", err)
-	//}
-	//m, err := migrate.NewWithInstance(
-	//	"httpfs", sourceInstance, "sqlite", targetInstance)
-	//if err != nil {
-	//	return fmt.Errorf("failed to initialize migrate instance, %w", err)
-	//}
-	//err = m.Migrate(schemaVersion)
-	//if err != nil && err != migrate.ErrNoChange {
-	//	return err
-	//}
-	//return sourceInstance.Close()
-	//////////------- old---
-	//migration, err := migrate.New("db/migration", "sqlite3://sqliteDemo.db")
-	//if err != nil {
-	//	// log.Fatal().Err(err).Msg("cannot create new migrate instance")
-	//	fmt.Errorf("invalid source instance, %w", err)
-	//}
-	//
-	//if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
-	//	// log.Fatal().Err(err).Msg("failed to run migrate up")
-	//	fmt.Errorf("failed to initialize migrate instance, %w", err)
-	//}
-
-	//log.Info().Msg("db migrated successfully")
-	//////////------- old--- end
-	// Get database driver for SQLite
-
-	// Create a new migration instance
-
-}
 func init() {
 
-	//db, err := sql.Open("sqlite3", "./sqliteDemo.db")
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//ensureSchema(db)
-	//fmt.Println("DB ..... Created")
-	////if err := ensureSchema(db); err != nil {
-	////	log.Fatalln("migration failed")
-	////}
-	//DB = db
 }
 
-//func setupRoute() *gin.Engine {
-//	r := gin.Default()
-//	r.GET("/getAccounts", getAccounts)
-//	return r
-//}
-
-//	func getAccounts(c *gin.Context) {
-//		var sql = `SELECT * FROM accounts`
-//		rows, _ := DB.Query(sql)
-//		defer rows.Close()
-//
-//		accounts := make([]Account, 0)
-//		for rows.Next() {
-//			singleAccount := Account{}
-//			_ = rows.Scan(&singleAccount.Id, &singleAccount.Balance, &singleAccount.Currency, &singleAccount.Owner)
-//
-//			accounts = append(accounts, singleAccount)
-//		}
-//		_ = rows.Err()
-//
-//		fmt.Println(rows)
-//
-//		c.JSON(http.StatusOK, accounts)
-//	}
 func runMigrations(db *sql.DB) {
 	// Get database driver for SQLite
 	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
@@ -120,8 +46,7 @@ func runMigrations(db *sql.DB) {
 	}
 }
 func main() {
-	//serv := setupRoute()
-	//serv.Run(":8080")
+
 	r := gin.Default()
 
 	// Database connection
