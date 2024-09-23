@@ -16,9 +16,9 @@ import (
 
 func Test(t *testing.T) {
 	dir := t.TempDir()
-	t.Logf("DB path : %s\n", filepath.Join(dir, "sqlite3.db"))
+	t.Logf("DB path : %s\n", filepath.Join(dir, "test.db"))
 	p := &Sqlite{}
-	addr := fmt.Sprintf("sqlite3://%s", filepath.Join(dir, "sqlite3.db"))
+	addr := fmt.Sprintf("sqlite3://%s", filepath.Join(dir, "test.db"))
 	d, err := p.Open(addr)
 	if err != nil {
 		t.Fatal(err)
@@ -28,9 +28,9 @@ func Test(t *testing.T) {
 
 func TestMigrate(t *testing.T) {
 	dir := t.TempDir()
-	t.Logf("DB path : %s\n", filepath.Join(dir, "sqlite3.db"))
+	t.Logf("DB path : %s\n", filepath.Join(dir, "test.db"))
 
-	db, err := sql.Open("sqlite3", filepath.Join(dir, "sqlite3.db"))
+	db, err := sql.Open("sqlite3", filepath.Join(dir, "test.db"))
 	if err != nil {
 		return
 	}
@@ -56,9 +56,9 @@ func TestMigrate(t *testing.T) {
 func TestMigrationTable(t *testing.T) {
 	dir := t.TempDir()
 
-	t.Logf("DB path : %s\n", filepath.Join(dir, "sqlite3.db"))
+	t.Logf("DB path : %s\n", filepath.Join(dir, "test.db"))
 
-	db, err := sql.Open("sqlite3", filepath.Join(dir, "sqlite3.db"))
+	db, err := sql.Open("sqlite3", filepath.Join(dir, "test.db"))
 	if err != nil {
 		return
 	}
@@ -95,9 +95,9 @@ func TestMigrationTable(t *testing.T) {
 
 func TestNoTxWrap(t *testing.T) {
 	dir := t.TempDir()
-	t.Logf("DB path : %s\n", filepath.Join(dir, "sqlite3.db"))
+	t.Logf("DB path : %s\n", filepath.Join(dir, "test.db"))
 	p := &Sqlite{}
-	addr := fmt.Sprintf("sqlite3://%s?x-no-tx-wrap=true", filepath.Join(dir, "sqlite3.db"))
+	addr := fmt.Sprintf("sqlite3://%s?x-no-tx-wrap=true", filepath.Join(dir, "test.db"))
 	d, err := p.Open(addr)
 	if err != nil {
 		t.Fatal(err)
@@ -109,9 +109,9 @@ func TestNoTxWrap(t *testing.T) {
 
 func TestNoTxWrapInvalidValue(t *testing.T) {
 	dir := t.TempDir()
-	t.Logf("DB path : %s\n", filepath.Join(dir, "sqlite3.db"))
+	t.Logf("DB path : %s\n", filepath.Join(dir, "test.db"))
 	p := &Sqlite{}
-	addr := fmt.Sprintf("sqlite3://%s?x-no-tx-wrap=yeppers", filepath.Join(dir, "sqlite3.db"))
+	addr := fmt.Sprintf("sqlite3://%s?x-no-tx-wrap=yeppers", filepath.Join(dir, "test.db"))
 	_, err := p.Open(addr)
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "x-no-tx-wrap")
@@ -121,7 +121,7 @@ func TestNoTxWrapInvalidValue(t *testing.T) {
 
 func TestMigrateWithDirectoryNameContainsWhitespaces(t *testing.T) {
 	dir := t.TempDir()
-	dbPath := filepath.Join(dir, "sqlite3.db")
+	dbPath := filepath.Join(dir, "test.db")
 	t.Logf("DB path : %s\n", dbPath)
 	p := &Sqlite{}
 	addr := fmt.Sprintf("sqlite3://file:%s", dbPath)
