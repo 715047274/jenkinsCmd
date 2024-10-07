@@ -4,14 +4,13 @@ import (
 	"database/sql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
 
 	//"embed"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/gin/demo/src/inter/routes"
 	_ "github.com/mattn/go-sqlite3"
-	"net/http"
 )
 
 var DB *sql.DB
@@ -30,7 +29,7 @@ func runMigrations(db *sql.DB) {
 	}
 
 	// Create a new migration instance
-	m, err := migrate.NewWithDatabaseInstance("file://db/migration",
+	m, err := migrate.NewWithDatabaseInstance("file://migration",
 		"sqlite3", driver)
 	if err != nil {
 		log.Fatalf("Migration initialization failed: %v", err)
@@ -59,21 +58,17 @@ func main() {
 	// Run migrations
 	runMigrations(db)
 
-	// Define your routes
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello, World!",
-		})
-	})
-
-	// Start the server
+	//// Define your routes
+	//r.GET("/", func(c *gin.Context) {
+	//	c.JSON(http.StatusOK, gin.H{
+	//		"message": "Hello, World!",
+	//	})
+	//})
+	//
+	//// Start the server
+	//r.Run(":8080")
+	//fmt.Println("hello world")
+	routes.ApiRoutes("", r)
 	r.Run(":8080")
-	fmt.Println("hello world")
-}
 
-type Account struct {
-	Id       int    `db:"id" json:"id"`
-	Owner    string `db:"owner" json:"owner"`
-	Currency string `db:"currency" json:"currency"`
-	Balance  int16  `db:"balance" json:"balance"`
 }
