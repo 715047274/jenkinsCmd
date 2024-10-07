@@ -1,28 +1,10 @@
-version: "3.9"
+version: '3'
 services:
-  postgres:
-    image: postgres:14-alpine
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=simple_bank
+  app:
+    build: .
     ports:
-      - "5432:5432"
-#  api:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
-#    depends_on:
-#      - postgres
-#    entrypoint:
-#      [
-#        "/app/wait-for.sh",
-#        "postgres:5432",
-#        "--",
-#        "/app/start.sh"
-#      ]
-#    command: [ "/app/main" ]
+      - "8080:8080"
+    volumes:
+      - ./migrations:/app/migrations
+    command: >
+      /bin/sh -c "migrate -path /app/migrations -database sqlite3://test.db up && ./main"
