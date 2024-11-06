@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gin/demo/src/inter/model"
-	"github.com/gin/demo/src/inter/service"
+	"github.com/gin/demo/internal/model"
+	"github.com/gin/demo/internal/service"
 	"net/http"
 )
 

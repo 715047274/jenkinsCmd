@@ -2,14 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"github.com/gin-gonic/gin"
+	"github.com/gin/demo/internal/routes"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
 
-	//"embed"
-	"github.com/gin-gonic/gin"
-	"github.com/gin/demo/src/inter/routes"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -46,28 +45,16 @@ func runMigrations(db *sql.DB) {
 }
 func main() {
 
-	r := gin.Default()
-
 	// Database connection
 	db, err := sql.Open("sqlite3", "./test.db")
 	if err != nil {
 		log.Fatalf("Failed to connect to the SQLite database: %v", err)
 	}
 	defer db.Close()
-
 	// Run migrations
 	runMigrations(db)
 
-	//// Define your routes
-	//r.GET("/", func(c *gin.Context) {
-	//	c.JSON(http.StatusOK, gin.H{
-	//		"message": "Hello, World!",
-	//	})
-	//})
-	//
-	//// Start the server
-	//r.Run(":8080")
-	//fmt.Println("hello world")
+	r := gin.Default()
 	routes.ApiRoutes("", r)
 	r.Run(":8080")
 

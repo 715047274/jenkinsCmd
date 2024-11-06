@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gin/demo/src/inter/model"
+	"github.com/gin/demo/internal/model"
 )
 
 type AccountRepository struct {

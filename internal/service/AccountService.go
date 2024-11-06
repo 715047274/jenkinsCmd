@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/gin/demo/src/inter/model"
-	"github.com/gin/demo/src/inter/repository"
+	"github.com/gin/demo/internal/model"
+	"github.com/gin/demo/internal/repository"
 )
 
 type AccountService struct {
