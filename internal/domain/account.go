@@ -1,8 +1,8 @@
-package model
+package domain
 
 import "time"
 
-type Account struct {
+type AccountItem struct {
 	Id       int       `db:"id" json:"id"`
 	Owner    string    `db:"owner" json:"owner"`
 	Currency string    `db:"currency" json:"currency"`

@@ -1,10 +1,10 @@
-package routes
+package router
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin/demo/internal/controller"
 	database "github.com/gin/demo/internal/db"
-	"github.com/gin/demo/internal/repository"
+	"github.com/gin/demo/internal/infrastructure/repositories"
 	"github.com/gin/demo/internal/service"
 )
 
@@ -14,7 +14,7 @@ func ApiRoutes(prefix string, router *gin.Engine) {
 	{
 		dashboard := apiGroup.Group("/dashboard/account")
 		{
-			accountRepo := repository.NewAccountRepository(db)
+			accountRepo := repositories.NewAccountRepository(db)
 			accountService := service.NewAccountService(accountRepo)
 			accountController := controller.NewAccountController(accountService)
 

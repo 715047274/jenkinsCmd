@@ -1,9 +1,9 @@
-package repository
+package repositories
 
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gin/demo/internal/model"
+	"github.com/gin/demo/internal/domain"
 )
 
 type AccountRepository struct {
@@ -15,19 +15,19 @@ func NewAccountRepository(dbClient *sql.DB) *AccountRepository {
 }
 
 type AccountRepositoryInterface interface {
-	// GetItemById(ID int) (*model.Account, error)
-	GetAllItems() (*[]model.Account, error)
+	// GetItemById(ID int) (*domain.Account, error)
+	GetAllItems() (*[]domain.AccountItem, error)
 }
 
-func (a *AccountRepository) GetAllItems() (*[]model.Account, error) {
+func (a *AccountRepository) GetAllItems() (*[]domain.AccountItem, error) {
 	row, err := a.dbClient.Query("SELECT * FROM Accounts")
 	if err != nil {
 		fmt.Printf("Error select query - %s", err)
 		return nil, err
 	}
-	var accountList []model.Account
+	var accountList []domain.AccountItem
 	for row.Next() {
-		var account model.Account
+		var account domain.AccountItem
 		err = row.Scan(&account.Id, &account.Owner, &account.Balance, &account.Currency, &account.Created)
 		fmt.Println(&row)
 		if err != nil {

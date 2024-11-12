@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gin/demo/internal/model"
+	"github.com/gin/demo/internal/domain"
 	"github.com/gin/demo/internal/service"
 	"net/http"
 )
@@ -19,7 +19,7 @@ func NewAccountController(accountService *service.AccountService) *AccountContro
 }
 
 func (h *AccountController) GetAccountList(c *gin.Context) {
-	var accountList *[]model.Account
+	var accountList *[]domain.Account
 	var err error
 	accountList, err = h.accountService.GetAllItems()
 	if err != nil {

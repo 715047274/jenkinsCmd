@@ -1,21 +1,21 @@
 package service
 
 import (
-	"github.com/gin/demo/internal/model"
-	"github.com/gin/demo/internal/repository"
+	"github.com/gin/demo/internal/domain"
+	"github.com/gin/demo/internal/infrastructure/repositories"
 )
 
 type AccountService struct {
-	accountRepository *repository.AccountRepository
+	accountRepository *repositories.AccountRepository
 }
 
-func NewAccountService(accountRepository *repository.AccountRepository) *AccountService {
+func NewAccountService(accountRepository *repositories.AccountRepository) *AccountService {
 	return &AccountService{
 		accountRepository: accountRepository,
 	}
 }
 
-func (s *AccountService) GetAllItems() (*[]model.Account, error) {
+func (s *AccountService) GetAllItems() (*[]domain.Account, error) {
 	accountList, err := s.accountRepository.GetAllItems()
 	return accountList, err
 }

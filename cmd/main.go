@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/gin/demo/internal/routes"
+	"github.com/gin/demo/internal/router"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -55,7 +55,7 @@ func main() {
 	runMigrations(db)
 
 	r := gin.Default()
-	routes.ApiRoutes("", r)
+	router.ApiRoutes("", r)
 	r.Run(":8080")
 
 }
