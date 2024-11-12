@@ -15,7 +15,7 @@ func NewAccountService(accountRepository *repositories.AccountRepository) *Accou
 	}
 }
 
-func (s *AccountService) GetAllItems() (*[]domain.Account, error) {
+func (s *AccountService) GetAllItems() (*[]domain.AccountItem, error) {
 	accountList, err := s.accountRepository.GetAllItems()
 	return accountList, err
 }

@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"go.uber.org/fx"
 )
@@ -19,4 +20,8 @@ func runApplication(lifecycle fx.Lifecycle) {
 			return nil
 		},
 	})
+}
+
+func NewContainer(db *sql.DB) *ServiceRegistry {
+
 }
