@@ -5,6 +5,7 @@ import (
 	"github.com/gin/demo/internal/controller"
 	database "github.com/gin/demo/internal/db"
 	"github.com/gin/demo/internal/infrastructure/repositories"
+	"github.com/gin/demo/internal/registry"
 	"github.com/gin/demo/internal/service"
 )
 
@@ -28,4 +29,6 @@ type Route struct {
 	Gin *gin.Engine
 }
 
-//
+func RegisterRoutes(engine *gin.Engine, registry *registry.ServiceRegistry) {
+
+}

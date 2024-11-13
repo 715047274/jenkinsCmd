@@ -32,5 +32,8 @@ func (r *ServiceRegistry) GetServiceAs(name string, targetType reflect.Type) (in
 	if !exists {
 		return nil, errors.New("service not found")
 	}
+	if reflect.TypeOf(service) != targetType {
+		return nil, errors.New("service type mismatch")
+	}
 	return service, nil
 }
