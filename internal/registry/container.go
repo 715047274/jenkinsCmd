@@ -4,6 +4,7 @@ import (
 	//"context"
 	"database/sql"
 	"github.com/gin/demo/internal/application"
+	"github.com/gin/demo/internal/infrastructure/repositories"
 	//"fmt"
 	//"go.uber.org/fx"
 )
@@ -28,10 +29,19 @@ func NewContainer(db *sql.DB) *ServiceRegistry {
 	registry := NewServiceRegistry()
 
 	// Register repositories
-	dispatcher := application.NewEventDispatcher()
+	//dispatcher := application.NewEventDispatcher()
 
 	//register repositories as services
-	registry.RegisterService("EventDispatcher", dispatcher)
+	//registry.RegisterService("EventDispatcher", dispatcher)
+
+	accountRepo := repositories.NewAccountQueryRepository(db)
+
+	registry.RegisterService("AccountQueryRepository", accountRepo)
+
+	// create abd register the account service dynamically using repositories
+	accountService := application.NewAccountService(accountRepo)
+
+	registry.RegisterService("AccountService", accountService)
 
 	return registry
 }

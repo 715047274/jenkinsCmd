@@ -10,6 +10,11 @@ type accountQueryRepositoryImpl struct {
 	db *sql.DB
 }
 
+func (r *accountQueryRepositoryImpl) GetAllAccountBalance(currency string) ([]domain.AccountItem, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewAccountQueryRepository(db *sql.DB) AccountQueryRepository {
 	return &accountQueryRepositoryImpl{db: db}
 }

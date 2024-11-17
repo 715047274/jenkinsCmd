@@ -19,7 +19,7 @@ func (r *ServiceRegistry) RegisterService(name string, service interface{}) {
 	r.services[name] = service
 }
 
-func (r *ServiceRegistry) GetService(name string, service interface{}) (interface{}, error) {
+func (r *ServiceRegistry) GetService(name string) (interface{}, error) {
 	service, exists := r.services[name]
 	if !exists {
 		return nil, errors.New("service not found")

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin/demo/internal/registry"
 	"github.com/gin/demo/internal/router"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -54,8 +55,14 @@ func main() {
 	// Run migrations
 	runMigrations(db)
 
-	r := gin.Default()
-	router.ApiRoutes("", r)
-	r.Run(":8080")
+	serviceRegistry := registry.NewContainer(db)
+	engine := gin.Default()
+	router.RegisterRoutes(engine, serviceRegistry)
+
+	log.Println("server is running 8080")
+	engine.Run(":8080")
+	//r := gin.Default()
+	//router.ApiRoutes("", r)
+	//r.Run(":8080")
 
 }

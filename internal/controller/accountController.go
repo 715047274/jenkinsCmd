@@ -19,7 +19,7 @@ func NewAccountController(accountService *service.AccountService) *AccountContro
 }
 
 func (h *AccountController) GetAccountList(c *gin.Context) {
-	var accountList *[]domain.Account
+	var accountList *[]domain.AccountItem
 	var err error
 	accountList, err = h.accountService.GetAllItems()
 	if err != nil {
