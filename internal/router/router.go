@@ -3,11 +3,9 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin/demo/internal/application"
-	_ "github.com/gin/demo/internal/controller"
 	_ "github.com/gin/demo/internal/db"
 	_ "github.com/gin/demo/internal/infrastructure/repositories"
 	"github.com/gin/demo/internal/registry"
-	_ "github.com/gin/demo/internal/service"
 	"net/http"
 )
 
