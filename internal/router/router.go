@@ -9,26 +9,6 @@ import (
 	"net/http"
 )
 
-//func ApiRoutes(prefix string, router *gin.Engine) {
-//	db := database.ConnectDb()
-//	apiGroup := router.Group(prefix)
-//	{
-//		dashboard := apiGroup.Group("/dashboard/account")
-//		{
-//			accountRepo := repositories.NewAccountRepository(db)
-//			accountService := service.NewAccountService(accountRepo)
-//			accountController := controller.NewAccountController(accountService)
-//
-//			dashboard.GET("/all", accountController.GetAccountList)
-//		}
-//	}
-//
-//}
-//
-//type Route struct {
-//	Gin *gin.Engine
-//}
-
 func RegisterRoutes(engine *gin.Engine, registry *registry.ServiceRegistry) {
 
 	// Retrieve account service dynamically from the registry
