@@ -11,11 +11,11 @@ type AccountItem struct {
 }
 
 type AccountEvent struct {
-	UserID    int64
-	ProductID int64
-	Activity  string
+	Owner    string
+	Balance  int64
+	Currency string
 }
 
 func (e AccountEvent) EventType() string {
-	return "AccountLogged"
+	return "AccountCreate"
 }

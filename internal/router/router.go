@@ -30,4 +30,8 @@ func RegisterRoutes(engine *gin.Engine, registry *registry.ServiceRegistry) {
 		}
 	})
 
+	engine.POST("/accounts/add", func(c *gin.Context) {
+		err := accountService.AddAccount()
+	})
+
 }

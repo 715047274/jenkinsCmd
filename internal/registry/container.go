@@ -29,17 +29,19 @@ func NewContainer(db *sql.DB) *ServiceRegistry {
 	registry := NewServiceRegistry()
 
 	// Register repositories
-	//dispatcher := application.NewEventDispatcher()
+	dispatcher := application.NewEventDispatcher()
 
 	//register repositories as services
-	//registry.RegisterService("EventDispatcher", dispatcher)
+	registry.RegisterService("EventDispatcher", dispatcher)
 
-	accountRepo := repositories.NewAccountQueryRepository(db)
+	accountQueryRepo := repositories.NewAccountQueryRepository(db)
+	accountCommRepo := repositories.NewAccountCommandRepository(db)
 
-	registry.RegisterService("AccountQueryRepository", accountRepo)
+	registry.RegisterService("AccountQueryRepository", accountQueryRepo)
+	registry.RegisterService("AccountCommandRepository", accountCommRepo)
 
 	// create abd register the account service dynamically using repositories
-	accountService := application.NewAccountService(accountRepo)
+	accountService := application.NewAccountService(accountQueryRepo, accountCommRepo, dispatcher)
 
 	registry.RegisterService("AccountService", accountService)
 
