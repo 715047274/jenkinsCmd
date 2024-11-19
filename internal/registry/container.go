@@ -42,8 +42,14 @@ func NewContainer(db *sql.DB) *ServiceRegistry {
 
 	// create abd register the account service dynamically using repositories
 	accountService := application.NewAccountService(accountQueryRepo, accountCommRepo, dispatcher)
+	inventoryService := &application.InventoryService{}
+	analysisService := &application.AnalyticService{}
 
 	registry.RegisterService("AccountService", accountService)
+
+	dispatcher.Subscribe("AccountCreate", accountService.HandleAccountCreate)
+	dispatcher.Subscribe("AccountCreate", inventoryService.HandleCarEvent)
+	dispatcher.Subscribe("AccountCreate", analysisService.HandleCarEvent)
 
 	return registry
 }

@@ -1,6 +1,7 @@
 package application
 
 import (
+	"fmt"
 	"github.com/gin/demo/internal/domain"
 	"github.com/gin/demo/internal/infrastructure/repositories"
 )
@@ -25,7 +26,7 @@ func NewAccountService(
 
 func (a *accountServiceImpl) AddAccount(userName string, balance int64, currency string) error {
 	//TODO implement me
-	panic("implement me")
+	//panic("implement me")
 
 	err := a.commandRepo.CreateAccount(userName, balance, currency)
 	if err != nil {
@@ -38,4 +39,11 @@ func (a *accountServiceImpl) AddAccount(userName string, balance int64, currency
 
 func (a *accountServiceImpl) GetAccount(userName string) ([]domain.AccountItem, error) {
 	return a.queryRepo.GetAccountBalance(userName)
+}
+
+func (a *accountServiceImpl) HandleAccountCreate(event interface{}) {
+	if accountEvent, ok := event.(domain.AccountEvent); ok {
+		fmt.Printf("Running account event handle for UserID=%s, ProductID=%d, Quantity=%s\n",
+			accountEvent.Owner, accountEvent.Balance, accountEvent.Currency)
+	}
 }

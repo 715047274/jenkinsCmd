@@ -31,7 +31,12 @@ func RegisterRoutes(engine *gin.Engine, registry *registry.ServiceRegistry) {
 	})
 
 	engine.POST("/accounts/add", func(c *gin.Context) {
-		err := accountService.AddAccount()
+		err := accountService.AddAccount("kevintest", 102, "USD")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status": "item added"})
+		}
 	})
 
 }

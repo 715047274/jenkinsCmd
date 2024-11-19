@@ -30,7 +30,7 @@ func (a *accountCommandRepositoryImpl) RemoveAccount(userName string, currency s
 func (a *accountCommandRepositoryImpl) CreateAccount(userName string, balance int64, currency string) error {
 	// panic("implement me")
 
-	query := "INSERT INTO accounts (owener, balance, currency) VALUES (?, ?,? ) "
+	query := "INSERT INTO accounts (owner, balance, currency) VALUES (?, ?,? ) "
 	_, err := a.db.Exec(query, userName, balance, currency)
 
 	return err
