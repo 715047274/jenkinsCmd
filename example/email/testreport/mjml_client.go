@@ -19,34 +19,6 @@ type MJMLClient struct {
 
 // CreateHTMLContent generates HTML content from the provided MJML template and JSON data.
 func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (string, error) {
-	//// Use the provided template or fall back to the default
-	//template := mj.DefaultTemplate
-	//if templateInput != "" {
-	//	template = templateInput
-	//}
-	//
-	//// Parse the JSON data into a map
-	//var parsedData map[string]interface{}
-	//if err := json.Unmarshal([]byte(jsonData), &parsedData); err != nil {
-	//	return "", fmt.Errorf("failed to parse JSON data: %w", err)
-	//}
-	//// Replace placeholders in the template with actual data
-	//processedTemplate := replaceTemplatePlaceholders(template, parsedData)
-	////fmt.Println("-----------------------------------------------")
-	////
-	////fmt.Println(processedTemplate)
-	//// Convert the processed MJML template to HTML
-	//output, err := mjml.ToHTML(context.Background(), processedTemplate, mjml.WithMinify(true))
-	//
-	//if err != nil {
-	//	var mjmlError mjml.Error
-	//	if errors.As(err, &mjmlError) {
-	//		return "", fmt.Errorf("MJML Conversion Error: %s", mjmlError.Message)
-	//	}
-	//	return "", err
-	//}
-	//return output, nil
-
 	// Use the provided template or fall back to the default
 	tmpl := mj.DefaultTemplate
 	if templateInput != "" {
@@ -59,8 +31,18 @@ func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (
 		return "", fmt.Errorf("failed to parse JSON data: %w", err)
 	}
 
-	// Parse the MJML template using html/template
-	t, err := template.New("mjml").Parse(tmpl)
+	// Define custom functions
+	funcMap := template.FuncMap{
+		"mod": func(a, b int) int {
+			return a % b
+		},
+		"add": func(a, b int) int {
+			return a + b
+		},
+	}
+
+	// Parse the MJML template using html/template with custom functions
+	t, err := template.New("mjml").Funcs(funcMap).Parse(tmpl)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template: %w", err)
 	}
@@ -70,6 +52,9 @@ func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (
 	if err := t.Execute(&processedTemplate, parsedData); err != nil {
 		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
+	// Log the generated MJML template
+	//fmt.Println("Generated MJML Template:")
+	//fmt.Println(processedTemplate.String())
 
 	// Convert the processed MJML template to HTML
 	output, err := mjml.ToHTML(context.Background(), processedTemplate.String(), mjml.WithMinify(true))
@@ -82,7 +67,6 @@ func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (
 	}
 
 	return output, nil
-
 }
 
 // replaceTemplatePlaceholders replaces placeholders in the MJML template with actual data.

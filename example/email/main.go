@@ -24,18 +24,19 @@ func main() {
 		log.Fatalf("Failed to generate JSON data: %v", err)
 	}
 
-	// Print the JSON data to verify the output
-	fmt.Println("Generated JSON Data:")
-	fmt.Println(jsonData)
+	//// Print the JSON data to verify the output
+	//fmt.Println("Generated JSON Data:")
+	//fmt.Println(jsonData)
 
 	// Initialize the MJML template and email details
 	mjmlClient := testreport.MJMLClient{
 		DefaultTemplate: `
 <mjml>
   <mj-body>
+    <!-- Header Section -->
     <mj-section>
       <mj-column>
-		<mj-image width="600px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
+        <mj-image width="600px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
         <mj-divider border-color="#F45E43"></mj-divider>
         <mj-text font-size="16px" font-family="helvetica" color="#555555">Cypress Test Report:</mj-text>
         <mj-table>
@@ -49,7 +50,7 @@ func main() {
           </tr>
           <tr>
             <td>Tests</td>
-            <td>{{ index .Stats "tests" }}</td>
+             <td>{{ index .Stats "tests" }}</td>
           </tr>
           <tr>
             <td>Passes</td>
@@ -57,43 +58,68 @@ func main() {
           </tr>
           <tr>
             <td>Failures</td>
-            <td style="color:red">{{ index .Stats "failures" }}</td>
+		    <td style="color:red">{{ index .Stats "failures" }}</td>
           </tr>
           <tr>
             <td>Pending</td>
-            <td>{{ index .Stats "pending" }}</td>
+             <td>{{ index .Stats "pending" }}</td>
           </tr>
           <tr>
             <td>Skipped</td>
             <td>{{ index .Stats "skipped" }}</td>
           </tr>
         </mj-table>
-        <mj-button background-color="#3067DB" href="http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/97/payroll-intelliigence-ui">Report Link</mj-button>
-
+        <mj-button background-color="#3067DB" href="http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui">
+          Report Link
+        </mj-button>
         <mj-text font-size="16px" font-family="helvetica" color="#555555">Failure Details:</mj-text>
-        <mj-accordion>
-         {{ range .Failures }}
- 	     <mj-accordion-element>
-          <mj-accordion-title>Suite:</strong> {{ .Suite }}</mj-accordion-title>
-		  <mj-accordion-text>
-          <span style="line-height:20px; font-size:14px;">
-          <strong>Test:</strong> {{ .Test }}<br/>
-          <strong>Error Stack:</strong> {{ .Error }}<br/>
-		  </span>	
-          </mj-accordion-text>
-          </mj-accordion-element>
-          {{ end }}
-       </mj-accordion>
       </mj-column>
     </mj-section>
-	<mj-section>
+
+    <!-- Dynamically generated sections for test failures -->
+		<mj-wrapper border="1px solid #000000" padding="50px 30px">
+	  {{ range .Failures }}
+	  <mj-section>
+		<mj-column>
+		  <mj-table>
+			<tr style="background-color:#f0f0f0;text-align:left;">
+			  <th colspan="2">Failure Details</th>
+			</tr>
+			<tr>
+			  <td><strong>Suite:</strong></td>
+			  <td>{{ .Suite }}</td>
+			</tr>
+			<tr>
+			  <td><strong>Test:</strong></td>
+			  <td>{{ .Test }}</td>
+			</tr>
+			<tr>
+			  <td><strong>Error Stack:</strong></td>
+			  <td>{{ .Error }}</td>
+			</tr>
+			<tr>
+			  <td><strong>Screenshot:</strong></td>
+			  <td>
+				http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui/{{ .ScreenShot }}
+			  </td>
+			</tr>
+		  </mj-table>
+		</mj-column>
+	  </mj-section>
+	  {{ end }}
+	</mj-wrapper>
+
+    <!-- Footer Section -->
+    <mj-section>
       <mj-column>
         <mj-image width="300px" src="https://storage-thumbnails.bananatag.com/images/zd8JyS/831be28551fbbe786a569f3d1b7ee525.png" />
       </mj-column>
     </mj-section>
   </mj-body>
 </mjml>
+
 `,
+
 		DefaultData: map[string]string{},
 	}
 
@@ -103,7 +129,7 @@ func main() {
 		log.Fatalf("Failed to generate HTML content: %v", err)
 	}
 
-	fmt.Println(htmlContent)
+	// fmt.Println(htmlContent)
 
 	// Initialize the MailClient
 	mailClient := testreport.MailClient{Domain: "corpadds.com"}

@@ -74,62 +74,10 @@ func (cr *CypressReport) LoadData(input string) error {
 		}
 	}
 
-	return cr.parseJSON2(data)
+	return cr.parseJSON(data)
 }
 
 func (cr *CypressReport) parseJSON(data []byte) error {
-	var reportData ReportData
-	if err := json.Unmarshal(data, &reportData); err != nil {
-		return fmt.Errorf("failed to parse JSON data: %w", err)
-	}
-
-	cr.Stats = map[string]interface{}{
-		"suites":         reportData.Stats.Suites,
-		"tests":          reportData.Stats.Tests,
-		"passes":         reportData.Stats.Passes,
-		"failures":       reportData.Stats.Failures,
-		"pending":        reportData.Stats.Pending,
-		"skipped":        reportData.Stats.Skipped,
-		"passPercent":    reportData.Stats.PassPercent,
-		"pendingPercent": reportData.Stats.PendingPercent,
-		"duration":       reportData.Stats.Duration,
-		"start":          reportData.Stats.Start,
-		"end":            reportData.Stats.End,
-	}
-
-	cr.Failures = []map[string]string{}
-	for _, result := range reportData.Results {
-		for _, suite := range result.Suites {
-			for _, test := range suite.Tests {
-				if test.State == "failed" {
-					context := test.Context
-					if len(context) > 0 && context[0] == '[' {
-						var parsedContext []map[string]interface{}
-						if err := json.Unmarshal([]byte(context), &parsedContext); err != nil {
-							context = "Error context is too complex to display."
-						} else {
-							var contextDetails strings.Builder
-							for _, detail := range parsedContext {
-								for key, value := range detail {
-									contextDetails.WriteString(fmt.Sprintf("%s: %v\n", key, value))
-								}
-							}
-							context = contextDetails.String()
-						}
-					}
-					cr.Failures = append(cr.Failures, map[string]string{
-						"Suite": suite.Title,
-						"Test":  test.FullTitle,
-						"Error": test.Err.Estack,
-					})
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func (cr *CypressReport) parseJSON2(data []byte) error {
 	var reportData ReportData
 	if err := json.Unmarshal(data, &reportData); err != nil {
 		return fmt.Errorf("failed to parse JSON data: %w", err)
@@ -166,7 +114,7 @@ func (cr *CypressReport) processSuites(suites []Suite, parentTitle string) {
 		// Process tests within the suite
 		for _, test := range suite.Tests {
 			if test.State == "failed" {
-				context := test.Context
+				context := cr.extractScreenshotPath(test.Context)
 				if len(context) > 0 && context[0] == '[' {
 					var parsedContext []map[string]interface{}
 					if err := json.Unmarshal([]byte(context), &parsedContext); err != nil {
@@ -182,10 +130,11 @@ func (cr *CypressReport) processSuites(suites []Suite, parentTitle string) {
 					}
 				}
 				cr.Failures = append(cr.Failures, map[string]string{
-					"Parent": parentTitle,
-					"Suite":  suite.Title,
-					"Test":   test.FullTitle,
-					"Error":  test.Err.Estack,
+					"Parent":     parentTitle,
+					"Suite":      suite.Title,
+					"Test":       test.FullTitle,
+					"ScreenShot": context,
+					"Error":      test.Err.Estack,
 				})
 			}
 		}
@@ -221,4 +170,18 @@ func (cr *CypressReport) GenerateJSONData() (string, error) {
 	}
 
 	return string(jsonData), nil
+}
+
+func (cr *CypressReport) extractScreenshotPath(context string) string {
+	if len(context) > 0 && context[0] == '[' {
+		var parsedContext []map[string]interface{}
+		if err := json.Unmarshal([]byte(context), &parsedContext); err == nil {
+			for _, detail := range parsedContext {
+				if value, ok := detail["value"].(string); ok && strings.HasPrefix(value, "screenshots") && strings.HasSuffix(value, ".png") {
+					return value
+				}
+			}
+		}
+	}
+	return "No screenshot found"
 }
