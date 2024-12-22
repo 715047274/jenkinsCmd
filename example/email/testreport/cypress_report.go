@@ -5,53 +5,91 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 )
 
 type CypressReport struct {
-	URL      string
 	Stats    map[string]interface{}
 	Failures []map[string]string
 }
 
-func (cr *CypressReport) FetchAndParse() error {
-	resp, err := http.Get(cr.URL)
-	if err != nil {
-		return fmt.Errorf("failed to fetch report: %w", err)
-	}
-	defer resp.Body.Close()
+type Stats struct {
+	Suites         int     `json:"suites"`
+	Tests          int     `json:"tests"`
+	Passes         int     `json:"passes"`
+	Failures       int     `json:"failures"`
+	Pending        int     `json:"pending"`
+	Skipped        int     `json:"skipped"`
+	PassPercent    float64 `json:"passPercent"`
+	PendingPercent float64 `json:"pendingPercent"`
+	Duration       int     `json:"duration"`
+	Start          string  `json:"start"`
+	End            string  `json:"end"`
+}
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+type Test struct {
+	Title     string `json:"title"`
+	FullTitle string `json:"fullTitle"`
+	State     string `json:"state"`
+	Context   string `json:"context"`
+	Duration  int    `json:"duration"`
+}
+
+type Suite struct {
+	Title string `json:"title"`
+	Tests []Test `json:"tests"`
+}
+
+type Result struct {
+	Title  string  `json:"title"`
+	Suites []Suite `json:"suites"`
+}
+
+type ReportData struct {
+	Stats   Stats    `json:"stats"`
+	Results []Result `json:"results"`
+}
+
+func (cr *CypressReport) LoadData(input string) error {
+	var data []byte
+	var err error
+
+	if strings.HasPrefix(input, "http://") || strings.HasPrefix(input, "https://") {
+		data, err = fetchFromURL(input)
+		if err != nil {
+			return err
+		}
+	} else {
+		data, err = os.ReadFile(input)
+		if err != nil {
+			data = []byte(input)
+		}
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read report data: %w", err)
+	return cr.parseJSON(data)
+}
+
+func (cr *CypressReport) parseJSON(data []byte) error {
+	var reportData ReportData
+	if err := json.Unmarshal(data, &reportData); err != nil {
+		return fmt.Errorf("failed to parse JSON data: %w", err)
 	}
 
-	var reportData struct {
-		Stats   map[string]interface{} `json:"stats"`
-		Results []struct {
-			Title  string `json:"title"`
-			Suites []struct {
-				Title string `json:"title"`
-				Tests []struct {
-					Title     string `json:"title"`
-					FullTitle string `json:"fullTitle"`
-					State     string `json:"state"`
-					Context   string `json:"context"`
-					Duration  int    `json:"duration"`
-				} `json:"tests"`
-			} `json:"suites"`
-		} `json:"results"`
+	cr.Stats = map[string]interface{}{
+		"suites":         reportData.Stats.Suites,
+		"tests":          reportData.Stats.Tests,
+		"passes":         reportData.Stats.Passes,
+		"failures":       reportData.Stats.Failures,
+		"pending":        reportData.Stats.Pending,
+		"skipped":        reportData.Stats.Skipped,
+		"passPercent":    reportData.Stats.PassPercent,
+		"pendingPercent": reportData.Stats.PendingPercent,
+		"duration":       reportData.Stats.Duration,
+		"start":          reportData.Stats.Start,
+		"end":            reportData.Stats.End,
 	}
 
-	if err := json.Unmarshal(body, &reportData); err != nil {
-		return fmt.Errorf("failed to parse report JSON: %w", err)
-	}
-
-	cr.Stats = reportData.Stats
 	cr.Failures = []map[string]string{}
 	for _, result := range reportData.Results {
 		for _, suite := range result.Suites {
@@ -59,17 +97,17 @@ func (cr *CypressReport) FetchAndParse() error {
 				if test.State == "failed" {
 					context := test.Context
 					if len(context) > 0 && context[0] == '[' {
-						parsedContext := []map[string]interface{}{}
+						var parsedContext []map[string]interface{}
 						if err := json.Unmarshal([]byte(context), &parsedContext); err != nil {
 							context = "Error context is too complex to display."
 						} else {
-							contextDetails := ""
+							var contextDetails strings.Builder
 							for _, detail := range parsedContext {
 								for key, value := range detail {
-									contextDetails += fmt.Sprintf("%s: %v\n", key, value)
+									contextDetails.WriteString(fmt.Sprintf("%s: %v\n", key, value))
 								}
 							}
-							context = contextDetails
+							context = contextDetails.String()
 						}
 					}
 					cr.Failures = append(cr.Failures, map[string]string{
@@ -85,11 +123,24 @@ func (cr *CypressReport) FetchAndParse() error {
 	return nil
 }
 
+func fetchFromURL(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch data from URL: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	return ioutil.ReadAll(resp.Body)
+}
+
 func (cr *CypressReport) GenerateJSONData() (string, error) {
-	// Convert failures into a structured JSON-like table without rendering
 	data := map[string]interface{}{
 		"Stats":    cr.Stats,
-		"Failures": cr.Failures, // Pass failures as raw data
+		"Failures": cr.Failures,
 	}
 
 	jsonData, err := json.Marshal(data)
@@ -98,20 +149,4 @@ func (cr *CypressReport) GenerateJSONData() (string, error) {
 	}
 
 	return string(jsonData), nil
-}
-
-func ReplaceTemplatePlaceholders(template string, parsedData map[string]interface{}) string {
-	for key, value := range parsedData {
-		switch v := value.(type) {
-		case string:
-			template = strings.ReplaceAll(template, fmt.Sprintf("{{.%s}}", key), v)
-		case float64, int:
-			template = strings.ReplaceAll(template, fmt.Sprintf("{{.%s}}", key), fmt.Sprintf("%v", v))
-		case map[string]interface{}:
-			for subKey, subValue := range v {
-				template = strings.ReplaceAll(template, fmt.Sprintf("{{.%s.%s}}", key, subKey), fmt.Sprintf("%v", subValue))
-			}
-		}
-	}
-	return template
 }

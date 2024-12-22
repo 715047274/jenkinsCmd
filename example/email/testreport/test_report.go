@@ -12,19 +12,22 @@ type TestReport struct {
 }
 
 // NewTestReport initializes a TestReport with the necessary clients.
-func NewTestReport(mailDomain, reportURL, defaultTemplate string, defaultData map[string]string) *TestReport {
+func NewTestReport(mailDomain, defaultTemplate string, defaultData map[string]string) *TestReport {
 	return &TestReport{
-		MailClient:    &MailClient{Domain: mailDomain},
-		MJMLClient:    &MJMLClient{DefaultTemplate: defaultTemplate, DefaultData: defaultData},
-		CypressReport: &CypressReport{URL: reportURL},
+		MailClient: &MailClient{Domain: mailDomain},
+		MJMLClient: &MJMLClient{
+			DefaultTemplate: defaultTemplate,
+			DefaultData:     defaultData,
+		},
+		CypressReport: &CypressReport{},
 	}
 }
 
 // GenerateAndSendReport processes the Cypress report, generates the HTML content, and sends the email.
-func (tr *TestReport) GenerateAndSendReport(sender, recipient, subject, attachmentPath string) error {
-	// Fetch and process the Cypress report
-	if err := tr.CypressReport.FetchAndProcess(); err != nil {
-		return fmt.Errorf("failed to fetch and process Cypress report: %w", err)
+func (tr *TestReport) GenerateAndSendReport(input, sender, recipient, subject, attachmentPath string) error {
+	// Load and process the Cypress report
+	if err := tr.CypressReport.LoadData(input); err != nil {
+		return fmt.Errorf("failed to load and process Cypress report: %w", err)
 	}
 
 	// Generate JSON data summarizing the report

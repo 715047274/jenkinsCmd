@@ -7,15 +7,16 @@ import (
 )
 
 func main() {
-	// Define the URL for the Cypress report
-	reportURL := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/execution/node/3/ws/cypress/reports/index.json"
+	// Define the input for the Cypress report
+	// This can be a URL, a local file path, or a JSON string
+	reportInput := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/execution/node/3/ws/cypress/reports/index.json"
 
 	// Initialize the CypressReport struct
-	report := testreport.CypressReport{URL: reportURL}
+	report := testreport.CypressReport{}
 
-	// Fetch and process the Cypress report
-	if err := report.FetchAndParse(); err != nil {
-		log.Fatalf("Failed to fetch and process Cypress report: %v", err)
+	// Load and process the Cypress report
+	if err := report.LoadData(reportInput); err != nil {
+		log.Fatalf("Failed to load and process Cypress report: %v", err)
 	}
 
 	// Generate JSON data summarizing the report
@@ -28,7 +29,6 @@ func main() {
 	fmt.Println("Generated JSON Data:")
 	fmt.Println(jsonData)
 
-	// Proceed with email generation and sending if needed
 	// Initialize the MJML template and email details
 	mjmlClient := testreport.MJMLClient{
 		DefaultTemplate: `
@@ -46,31 +46,37 @@ func main() {
           </tr>
           <tr>
             <td>Suites</td>
-            <td>{{.Stats.Suites}}</td>
+            <td>{{ index .Stats "suites" }}</td>
           </tr>
           <tr>
             <td>Tests</td>
-            <td>{{.Stats.Tests}}</td>
+            <td>{{ index .Stats "tests" }}</td>
           </tr>
           <tr>
             <td>Passes</td>
-            <td>{{.Stats.Passes}}</td>
+            <td>{{ index .Stats "passes" }}</td>
           </tr>
           <tr>
             <td>Failures</td>
-            <td>{{.Stats.Failures}}</td>
+            <td>{{ index .Stats "failures" }}</td>
           </tr>
           <tr>
             <td>Pending</td>
-            <td>{{.Stats.Pending}}</td>
+            <td>{{ index .Stats "pending" }}</td>
           </tr>
           <tr>
             <td>Skipped</td>
-            <td>{{.Stats.Skipped}}</td>
+            <td>{{ index .Stats "skipped" }}</td>
           </tr>
         </mj-table>
         <mj-text font-size="16px" font-family="helvetica" color="#555555">Failure Details:</mj-text>
-        {{.Failures}}
+        {{ range .Failures }}
+        <mj-text font-size="14px" font-family="helvetica" color="#555555">
+          <strong>Suite:</strong> {{ .Suite }}<br/>
+          <strong>Test:</strong> {{ .Test }}<br/>
+          <strong>Error:</strong> {{ .Error }}<br/>
+        </mj-text>
+        {{ end }}
       </mj-column>
     </mj-section>
   </mj-body>
@@ -80,7 +86,7 @@ func main() {
 	}
 
 	// Create the HTML content from the JSON data
-	htmlContent, err := mjmlClient.PrepareHTMLContent("", jsonData)
+	htmlContent, err := mjmlClient.CreateHTMLContent("", jsonData)
 	if err != nil {
 		log.Fatalf("Failed to generate HTML content: %v", err)
 	}
