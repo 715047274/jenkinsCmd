@@ -10,7 +10,6 @@ func main() {
 	// Define the input for the Cypress report
 	// This can be a URL, a local file path, or a JSON string
 	reportInput := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/execution/node/3/ws/cypress/reports/index.json"
-
 	// Initialize the CypressReport struct
 	report := testreport.CypressReport{}
 
@@ -90,6 +89,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to generate HTML content: %v", err)
 	}
+
+	fmt.Println(htmlContent)
 
 	// Initialize the MailClient
 	mailClient := testreport.MailClient{Domain: "corpadds.com"}

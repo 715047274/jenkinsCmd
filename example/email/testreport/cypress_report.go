@@ -37,8 +37,9 @@ type Test struct {
 }
 
 type Suite struct {
-	Title string `json:"title"`
-	Tests []Test `json:"tests"`
+	Title  string  `json:"title"`
+	Tests  []Test  `json:"tests"`
+	Suites []Suite `json:"suites"`
 }
 
 type Result struct {
@@ -67,7 +68,7 @@ func (cr *CypressReport) LoadData(input string) error {
 		}
 	}
 
-	return cr.parseJSON(data)
+	return cr.parseJSON2(data)
 }
 
 func (cr *CypressReport) parseJSON(data []byte) error {
@@ -119,8 +120,73 @@ func (cr *CypressReport) parseJSON(data []byte) error {
 			}
 		}
 	}
+	return nil
+}
+
+func (cr *CypressReport) parseJSON2(data []byte) error {
+	var reportData ReportData
+	if err := json.Unmarshal(data, &reportData); err != nil {
+		return fmt.Errorf("failed to parse JSON data: %w", err)
+	}
+
+	// Populate Stats
+	cr.Stats = map[string]interface{}{
+		"suites":         reportData.Stats.Suites,
+		"tests":          reportData.Stats.Tests,
+		"passes":         reportData.Stats.Passes,
+		"failures":       reportData.Stats.Failures,
+		"pending":        reportData.Stats.Pending,
+		"skipped":        reportData.Stats.Skipped,
+		"passPercent":    reportData.Stats.PassPercent,
+		"pendingPercent": reportData.Stats.PendingPercent,
+		"duration":       reportData.Stats.Duration,
+		"start":          reportData.Stats.Start,
+		"end":            reportData.Stats.End,
+	}
+
+	// Initialize Failures
+	cr.Failures = []map[string]string{}
+
+	// Process Results Recursively
+	for _, result := range reportData.Results {
+		cr.processSuites(result.Suites, result.Title)
+	}
 
 	return nil
+}
+
+func (cr *CypressReport) processSuites(suites []Suite, parentTitle string) {
+	for _, suite := range suites {
+		// Process tests within the suite
+		for _, test := range suite.Tests {
+			if test.State == "failed" {
+				context := test.Context
+				if len(context) > 0 && context[0] == '[' {
+					var parsedContext []map[string]interface{}
+					if err := json.Unmarshal([]byte(context), &parsedContext); err != nil {
+						context = "Error context is too complex to display."
+					} else {
+						var contextDetails strings.Builder
+						for _, detail := range parsedContext {
+							for key, value := range detail {
+								contextDetails.WriteString(fmt.Sprintf("%s: %v\n", key, value))
+							}
+						}
+						context = contextDetails.String()
+					}
+				}
+				cr.Failures = append(cr.Failures, map[string]string{
+					"Parent": parentTitle,
+					"Suite":  suite.Title,
+					"Test":   test.FullTitle,
+					"Error":  context,
+				})
+			}
+		}
+
+		// Recursively process nested suites
+		cr.processSuites(suite.Suites, suite.Title)
+	}
 }
 
 func fetchFromURL(url string) ([]byte, error) {
