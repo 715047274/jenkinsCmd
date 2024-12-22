@@ -33,7 +33,13 @@ type Test struct {
 	FullTitle string `json:"fullTitle"`
 	State     string `json:"state"`
 	Context   string `json:"context"`
-	Duration  int    `json:"duration"`
+	Err       Err
+	Duration  int `json:"duration"`
+}
+
+type Err struct {
+	Message string `json:"message"`
+	Estack  string `json:"estack"`
 }
 
 type Suite struct {
@@ -114,7 +120,7 @@ func (cr *CypressReport) parseJSON(data []byte) error {
 					cr.Failures = append(cr.Failures, map[string]string{
 						"Suite": suite.Title,
 						"Test":  test.FullTitle,
-						"Error": context,
+						"Error": test.Err.Estack,
 					})
 				}
 			}
@@ -179,7 +185,7 @@ func (cr *CypressReport) processSuites(suites []Suite, parentTitle string) {
 					"Parent": parentTitle,
 					"Suite":  suite.Title,
 					"Test":   test.FullTitle,
-					"Error":  context,
+					"Error":  test.Err.Estack,
 				})
 			}
 		}
