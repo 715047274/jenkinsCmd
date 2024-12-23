@@ -9,7 +9,7 @@ import (
 func main() {
 	// Define the input for the Cypress report
 	// This can be a URL, a local file path, or a JSON string
-	reportInput := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/execution/node/3/ws/cypress/reports/index.json"
+	reportInput := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/98/execution/node/3/ws/cypress/reports/index.json"
 	// Initialize the CypressReport struct
 	report := testreport.CypressReport{}
 
@@ -69,7 +69,7 @@ func main() {
             <td>{{ index .Stats "skipped" }}</td>
           </tr>
         </mj-table>
-        <mj-button background-color="#3067DB" href="http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui">
+        <mj-button background-color="#3067DB" href="http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/98/payroll-intelliigence-ui">
           Report Link
         </mj-button>
       </mj-column>
@@ -99,7 +99,7 @@ func main() {
 			<tr style="vertical-align:top;">
 			  <td><strong>Screenshot:</strong></td>
 			  <td style="padding:10px;">
-				http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui/{{ .ScreenShot }}
+				http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/98/payroll-intelliigence-ui/{{ .ScreenShot }}
 			  </td>
 			</tr>
 		  </mj-table>
@@ -132,7 +132,7 @@ func main() {
 
 	// Send the email
 	sender := "autotest@yourdomain.com"
-	recipient := "k.zhang@ceridian.com"
+	recipient := "k.zhang@dayforce.com"
 	subject := "Cypress Test Report"
 	attachmentPath := "" // Add an attachment if needed
 	err = mailClient.SendHTMLEmailWithAttachment(sender, recipient, subject, htmlContent, attachmentPath)

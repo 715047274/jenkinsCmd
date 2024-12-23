@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"os"
 	"strings"
 
 	"github.com/Boostport/mjml-go"
@@ -19,10 +20,23 @@ type MJMLClient struct {
 
 // CreateHTMLContent generates HTML content from the provided MJML template and JSON data.
 func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (string, error) {
-	// Use the provided template or fall back to the default
-	tmpl := mj.DefaultTemplate
-	if templateInput != "" {
+	var tmpl string
+	// Determine if templateInput is a filepath or a direct string
+	if strings.HasSuffix(templateInput, ".tmpl") {
+		// Read the template file
+		content, err := os.ReadFile(templateInput)
+		if err != nil {
+			return "", fmt.Errorf("failed to read template file: %w", err)
+		}
+		tmpl = string(content)
+	} else {
+		// Use the input string as the template
 		tmpl = templateInput
+	}
+	// Use the provided template or fall back to the default
+	// If no input is provided, fall back to the default template
+	if tmpl == "" {
+		tmpl = mj.DefaultTemplate
 	}
 
 	// Parse the JSON data into a map
