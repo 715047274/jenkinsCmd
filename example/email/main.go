@@ -36,7 +36,7 @@ func main() {
     <!-- Header Section -->
     <mj-section>
       <mj-column>
-        <mj-image width="600px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
+        <mj-image width="700px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
         <mj-divider border-color="#F45E43"></mj-divider>
         <mj-text font-size="16px" font-family="helvetica" color="#555555">Cypress Test Report:</mj-text>
         <mj-table>
@@ -44,27 +44,27 @@ func main() {
             <th>Metric</th>
             <th>Value</th>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Suites</td>
             <td>{{ index .Stats "suites" }}</td>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Tests</td>
              <td>{{ index .Stats "tests" }}</td>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Passes</td>
             <td style="color:green">{{ index .Stats "passes" }}</td>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Failures</td>
 		    <td style="color:red">{{ index .Stats "failures" }}</td>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Pending</td>
-             <td>{{ index .Stats "pending" }}</td>
+            <td>{{ index .Stats "pending" }}</td>
           </tr>
-          <tr>
+          <tr style="text-align:center;">
             <td>Skipped</td>
             <td>{{ index .Stats "skipped" }}</td>
           </tr>
@@ -72,12 +72,11 @@ func main() {
         <mj-button background-color="#3067DB" href="http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui">
           Report Link
         </mj-button>
-        <mj-text font-size="16px" font-family="helvetica" color="#555555">Failure Details:</mj-text>
       </mj-column>
     </mj-section>
-
+	
     <!-- Dynamically generated sections for test failures -->
-		<mj-wrapper border="1px solid #000000" padding="50px 30px">
+		<mj-wrapper border="1px solid #000000" padding="10px 10px">
 	  {{ range .Failures }}
 	  <mj-section>
 		<mj-column>
@@ -85,21 +84,21 @@ func main() {
 			<tr style="background-color:#f0f0f0;text-align:left;">
 			  <th colspan="2">Failure Details</th>
 			</tr>
-			<tr>
+			<tr style="vertical-align:top;">
 			  <td><strong>Suite:</strong></td>
-			  <td>{{ .Suite }}</td>
+			  <td style="padding-left: 10px;">{{ .Suite }}</td>
 			</tr>
-			<tr>
+			<tr style="vertical-align:top;">
 			  <td><strong>Test:</strong></td>
-			  <td>{{ .Test }}</td>
+			  <td style="padding-left:10px;">{{ .Test }}</td>
 			</tr>
-			<tr>
+			<tr style="vertical-align:top;">
 			  <td><strong>Error Stack:</strong></td>
-			  <td>{{ .Error }}</td>
+			  <td style="padding:10px;background-color:#eeeeee;">{{ .Error }}</td>
 			</tr>
-			<tr>
+			<tr style="vertical-align:top;">
 			  <td><strong>Screenshot:</strong></td>
-			  <td>
+			  <td style="padding:10px;">
 				http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/95/payroll-intelliigence-ui/{{ .ScreenShot }}
 			  </td>
 			</tr>
@@ -108,7 +107,6 @@ func main() {
 	  </mj-section>
 	  {{ end }}
 	</mj-wrapper>
-
     <!-- Footer Section -->
     <mj-section>
       <mj-column>
@@ -128,9 +126,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to generate HTML content: %v", err)
 	}
-
 	// fmt.Println(htmlContent)
-
 	// Initialize the MailClient
 	mailClient := testreport.MailClient{Domain: "corpadds.com"}
 
@@ -139,7 +135,6 @@ func main() {
 	recipient := "k.zhang@ceridian.com"
 	subject := "Cypress Test Report"
 	attachmentPath := "" // Add an attachment if needed
-
 	err = mailClient.SendHTMLEmailWithAttachment(sender, recipient, subject, htmlContent, attachmentPath)
 	if err != nil {
 		log.Fatalf("Failed to send email: %v", err)
