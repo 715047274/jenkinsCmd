@@ -13,13 +13,13 @@ import (
 	"github.com/Boostport/mjml-go"
 )
 
-type MJMLClient struct {
+type MjmlHandler struct {
 	DefaultTemplate string
 	DefaultData     map[string]string
 }
 
 // CreateHTMLContent generates HTML content from the provided MJML template and JSON data.
-func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (string, error) {
+func (mj *MjmlHandler) CreateHTMLContent(templateInput string, jsonData string) (string, error) {
 	var tmpl string
 	// Determine if templateInput is a filepath or a direct string
 	if strings.HasSuffix(templateInput, ".tmpl") {
@@ -40,10 +40,13 @@ func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (
 	}
 
 	// Parse the JSON data into a map
-	var parsedData map[string]interface{}
-	if err := json.Unmarshal([]byte(jsonData), &parsedData); err != nil {
+	var rawData map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonData), &rawData); err != nil {
 		return "", fmt.Errorf("failed to parse JSON data: %w", err)
 	}
+
+	// Convert float64 to int for numeric values
+	parsedData := convertFloatsToInts(rawData)
 
 	// Define custom functions
 	funcMap := template.FuncMap{
@@ -81,6 +84,26 @@ func (mj *MJMLClient) CreateHTMLContent(templateInput string, jsonData string) (
 	}
 
 	return output, nil
+}
+
+func convertFloatsToInts(data map[string]interface{}) map[string]interface{} {
+	for key, value := range data {
+		switch v := value.(type) {
+		case float64:
+			data[key] = int(v)
+		case []interface{}:
+			for i, item := range v {
+				if num, ok := item.(float64); ok {
+					v[i] = int(num)
+				} else if subMap, ok := item.(map[string]interface{}); ok {
+					v[i] = convertFloatsToInts(subMap)
+				}
+			}
+		case map[string]interface{}:
+			data[key] = convertFloatsToInts(v)
+		}
+	}
+	return data
 }
 
 // replaceTemplatePlaceholders replaces placeholders in the MJML template with actual data.

@@ -9,7 +9,9 @@ import (
 	"strings"
 )
 
-type CypressReport struct {
+// cypress ui report handler , parse the cypress result.json
+
+type CypressParser struct {
 	Stats    map[string]interface{}
 	Failures []map[string]string
 }
@@ -58,7 +60,7 @@ type ReportData struct {
 	Results []Result `json:"results"`
 }
 
-func (cr *CypressReport) LoadData(input string) error {
+func (cr *CypressParser) LoadData(input string) error {
 	var data []byte
 	var err error
 
@@ -77,7 +79,7 @@ func (cr *CypressReport) LoadData(input string) error {
 	return cr.parseJSON(data)
 }
 
-func (cr *CypressReport) parseJSON(data []byte) error {
+func (cr *CypressParser) parseJSON(data []byte) error {
 	var reportData ReportData
 	if err := json.Unmarshal(data, &reportData); err != nil {
 		return fmt.Errorf("failed to parse JSON data: %w", err)
@@ -109,7 +111,7 @@ func (cr *CypressReport) parseJSON(data []byte) error {
 	return nil
 }
 
-func (cr *CypressReport) processSuites(suites []Suite, parentTitle string) {
+func (cr *CypressParser) processSuites(suites []Suite, parentTitle string) {
 	for _, suite := range suites {
 		// Process tests within the suite
 		for _, test := range suite.Tests {
@@ -158,7 +160,7 @@ func fetchFromURL(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (cr *CypressReport) GenerateJSONData() (string, error) {
+func (cr *CypressParser) GenerateJSONData() (string, error) {
 	data := map[string]interface{}{
 		"Stats":    cr.Stats,
 		"Failures": cr.Failures,
@@ -172,7 +174,7 @@ func (cr *CypressReport) GenerateJSONData() (string, error) {
 	return string(jsonData), nil
 }
 
-func (cr *CypressReport) extractScreenshotPath(context string) string {
+func (cr *CypressParser) extractScreenshotPath(context string) string {
 	if len(context) > 0 && context[0] == '[' {
 		var parsedContext []map[string]interface{}
 		if err := json.Unmarshal([]byte(context), &parsedContext); err == nil {

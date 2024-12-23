@@ -4,40 +4,40 @@ import (
 	"fmt"
 )
 
-// TestReport represents the main structure for generating and sending test reports.
-type TestReport struct {
+// AutoTestReport represents the main structure for generating and sending test reports.
+type AutoTestReport struct {
 	MailClient    *MailClient
-	MJMLClient    *MJMLClient
-	CypressReport *CypressReport
+	MjmlHandler   *MjmlHandler
+	CypressParser *CypressParser
 }
 
-// NewTestReport initializes a TestReport with the necessary clients.
-func NewTestReport(mailDomain, defaultTemplate string, defaultData map[string]string) *TestReport {
-	return &TestReport{
+// NewAutoTestReport initializes a AutoTestReport with the necessary clients.
+func NewAutoTestReport(mailDomain, defaultTemplate string, defaultData map[string]string) *AutoTestReport {
+	return &AutoTestReport{
 		MailClient: &MailClient{Domain: mailDomain},
-		MJMLClient: &MJMLClient{
+		MjmlHandler: &MjmlHandler{
 			DefaultTemplate: defaultTemplate,
 			DefaultData:     defaultData,
 		},
-		CypressReport: &CypressReport{},
+		CypressParser: &CypressParser{},
 	}
 }
 
 // GenerateAndSendReport processes the Cypress report, generates the HTML content, and sends the email.
-func (tr *TestReport) GenerateAndSendReport(input, sender, recipient, subject, attachmentPath string) error {
+func (tr *AutoTestReport) GenerateAndSendReport(input, sender, recipient, subject, attachmentPath string) error {
 	// Load and process the Cypress report
-	if err := tr.CypressReport.LoadData(input); err != nil {
+	if err := tr.CypressParser.LoadData(input); err != nil {
 		return fmt.Errorf("failed to load and process Cypress report: %w", err)
 	}
 
 	// Generate JSON data summarizing the report
-	jsonData, err := tr.CypressReport.GenerateJSONData()
+	jsonData, err := tr.CypressParser.GenerateJSONData()
 	if err != nil {
 		return fmt.Errorf("failed to generate JSON data: %w", err)
 	}
 
 	// Generate the HTML content
-	htmlContent, err := tr.MJMLClient.CreateHTMLContent("", jsonData)
+	htmlContent, err := tr.MjmlHandler.CreateHTMLContent("", jsonData)
 	if err != nil {
 		return fmt.Errorf("failed to create HTML content: %w", err)
 	}

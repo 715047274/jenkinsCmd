@@ -162,3 +162,117 @@ func TestCreateHTMLContentWithComplex(t *testing.T) {
 
 	}
 }
+
+func TestMJMLClientWithModAndAdd(t *testing.T) {
+	// Test template with mod and add functions
+	templateInput := `
+	<mjml>
+	  <mj-body>
+		<mj-section>
+		  <mj-column>
+			<mj-table>
+			  <tr style="background-color:#f0f0f0;text-align:left;">
+				<th>Index</th>
+				<th>Value</th>
+				<th>Mod 2</th>
+				<th>Add 10</th>
+			  </tr>
+			  {{ range $index, $value := .Values }}
+			  <tr>
+				<td>{{ $index }}</td>
+				<td>{{ $value }}</td>
+				<td>{{ mod $index 2 }}</td>
+				<td>{{ add $value 10 }}</td>
+			  </tr>
+			  {{ end }}
+			</mj-table>
+		  </mj-column>
+		</mj-section>
+	  </mj-body>
+	</mjml>
+	`
+
+	// Sample JSON data for the test
+	jsonData := `{
+		"Values": [1, 2, 3, 4, 5]
+	}`
+
+	// Create an MJMLClient instance
+	mjmlClient := MJMLClient{}
+
+	// Generate the HTML content
+	output, err := mjmlClient.CreateHTMLContent(templateInput, jsonData)
+	if err != nil {
+		t.Fatalf("Failed to generate HTML content: %v", err)
+	}
+
+	// Verify that the output contains expected values
+	expectedStrings := []string{
+		"<td>0</td><td>1</td><td>0</td><td>11</td>", // First row
+		"<td>1</td><td>2</td><td>1</td><td>12</td>", // Second row
+		"<td>2</td><td>3</td><td>0</td><td>13</td>", // Third row
+		"<td>3</td><td>4</td><td>1</td><td>14</td>", // Fourth row
+		"<td>4</td><td>5</td><td>0</td><td>15</td>", // Fifth row
+	}
+
+	for _, expected := range expectedStrings {
+		if !strings.Contains(output, expected) {
+			t.Errorf("Output missing expected value: %s\nOutput:\n%s", expected, output)
+		}
+	}
+}
+func TestMJMLClientWithGridView(t *testing.T) {
+	// Test template to create a grid view with rows of 4 columns
+	templateInput := `
+	<mjml>
+	  <mj-body>
+		<mj-section>
+		  <mj-group>
+			{{ range $i, $num := .Numbers }}
+			  {{ if eq (mod $i 4) 0 }}
+			  {{ if ne $i 0 }}
+			  </mj-group>
+			  <mj-group>
+			  {{ end }}
+			  {{ end }}
+			  <mj-column>
+				<mj-text font-size="20px" line-height="24px" color="#333333" align="center">
+				  {{ $num }}
+				</mj-text>
+			  </mj-column>
+			{{ end }}
+		  </mj-group>
+		</mj-section>
+	  </mj-body>
+	</mjml>
+	`
+
+	// Sample JSON data for the test
+	jsonData := `{
+		"Numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+	}`
+
+	// Create an MJMLClient instance
+	mjmlClient := MJMLClient{}
+
+	// Generate the HTML content
+	output, err := mjmlClient.CreateHTMLContent(templateInput, jsonData)
+	if err != nil {
+		t.Fatalf("Failed to generate HTML content: %v", err)
+	}
+
+	// Verify that the output contains expected grid structure
+	expectedStrings := []string{
+		"<mj-column>",          // Column start
+		"<mj-text>1</mj-text>", // First number
+		"<mj-text>5</mj-text>", // Fifth number
+		"</mj-column>",         // Column end
+		"</mj-group>",          // Group end
+	}
+
+	for _, expected := range expectedStrings {
+		if !strings.Contains(output, expected) {
+			t.Errorf("Output missing expected value: %s\nOutput:\n%s", expected, output)
+		}
+	}
+}
