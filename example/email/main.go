@@ -14,9 +14,22 @@ func buildEmail(reportLink string) string {
 	return fmt.Sprintf(`
 	<mjml>
 	  <mj-body>
+     <!-- Header Section -->
+		<mj-section>
+		  <mj-column>
+			<mj-image width="700px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
+		  </mj-column>
+		</mj-section>
+      <!-- Body Section -->
 	    %s
 	    %s
 	    %s
+      <!-- Footer Section -->
+		<mj-section>
+		  <mj-column>
+	        <mj-image width="300px" src="https://storage-thumbnails.bananatag.com/images/zd8JyS/831be28551fbbe786a569f3d1b7ee525.png" />
+		  </mj-column>
+		</mj-section>
 	  </mj-body>
 	</mjml>
 	`, header, table, errorBoard)
@@ -33,11 +46,8 @@ func buildErrorBoard(reportLink string) string {
 	        <p><strong>Test:</strong> {{ .Test }}</p>
 	        <p style="padding:10px;background-color:#eeeeee;"><strong style="color:red">Error:</strong> {{ .Error }}</p>
 	        <p><strong>Screenshot:</strong> 
-	          <a href="%s/{{ .ScreenShot }}">
-	            View Screenshot
-	          </a>
-	        </p>
-	      </mj-text>
+          </mj-text>
+			<mj-image width="700px" src="%s/{{ .ScreenShot }}" />
 	    </mj-column>
 	  </mj-section>
 	  {{ end }}
@@ -91,7 +101,6 @@ func buildHeader() string {
 	return `
 	<mj-section>
 	  <mj-column>
-        <mj-image width="700px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
 	    <mj-text font-size="20px" color="#333333" align="center">Cypress Test Report</mj-text>
 	    <mj-divider border-color="#F45E43"></mj-divider>
 	  </mj-column>
@@ -101,7 +110,7 @@ func buildHeader() string {
 
 func main() {
 	// Configuration
-	buildNum := "98"
+	buildNum := "92"
 	reportHost := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/"
 	// Email configuration
 	mailDomain := "corpadds.com"
@@ -111,7 +120,9 @@ func main() {
 	attachmentPath := ""
 
 	reportLink := fmt.Sprintf("%s%s/payroll-intelliigence-ui", reportHost, buildNum)
-	reportInput := fmt.Sprintf("%s%s/execution/node/3/ws/cypress/reports/index.json", reportHost, buildNum)
+	//reportInput := fmt.Sprintf("%s%s/execution/node/3/ws/cypress/reports/index.json", reportHost, buildNum)
+	reportInput := fmt.Sprintf("%s%s/payroll-intelliigence-ui/index.json", reportHost, buildNum)
+
 	// Generate the email template
 	emailTemplate := buildEmail(reportLink)
 	// Initialize AutoTestReport
