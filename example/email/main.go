@@ -24,14 +24,14 @@ func buildEmail(reportLink string) string {
 
 func buildErrorBoard(reportLink string) string {
 	return fmt.Sprintf(`
-	<mj-wrapper>
+	<mj-wrapper border="1px solid #000000" padding="10px 10px">
 	  {{ range .Failures }}
 	  <mj-section>
 	    <mj-column>
 	      <mj-text>
 	        <p><strong>Suite:</strong> {{ .Suite }}</p>
 	        <p><strong>Test:</strong> {{ .Test }}</p>
-	        <p><strong>Error:</strong> {{ .Error }}</p>
+	        <p style="padding:10px;background-color:#eeeeee;"><strong style="color:red">Error:</strong> {{ .Error }}</p>
 	        <p><strong>Screenshot:</strong> 
 	          <a href="%s/{{ .ScreenShot }}">
 	            View Screenshot
@@ -64,11 +64,11 @@ func buildTable(reportLink string) string {
 	      </tr>
 	      <tr>
 	        <td>Passes</td>
-	        <td>{{ index .Stats "passes" }}</td>
+	        <td style="color:green">{{ index .Stats "passes" }}</td>
 	      </tr>
 	      <tr>
 	        <td>Failures</td>
-	        <td>{{ index .Stats "failures" }}</td>
+	        <td style="color:red">{{ index .Stats "failures" }}</td>
 	      </tr>
 	      <tr>
 	        <td>Pending</td>
@@ -91,6 +91,7 @@ func buildHeader() string {
 	return `
 	<mj-section>
 	  <mj-column>
+        <mj-image width="700px" src="https://storage-thumbnails.bananatag.com/images/zsfKYb/1b35331be2d0a05a7d6ce2531ebc2ab4.png" />
 	    <mj-text font-size="20px" color="#333333" align="center">Cypress Test Report</mj-text>
 	    <mj-divider border-color="#F45E43"></mj-divider>
 	  </mj-column>
@@ -102,12 +103,6 @@ func main() {
 	// Configuration
 	buildNum := "98"
 	reportHost := "http://nan4dfc1tst15.custadds.com:8080/job/Payroll_Intelligence_UI_Cypress_Test/"
-	reportLink := fmt.Sprintf("%s%s/payroll-intelliigence-ui", reportHost, buildNum)
-	reportInput := fmt.Sprintf("%s%s/execution/node/3/ws/cypress/reports/index.json", reportHost, buildNum)
-
-	// Generate the email template
-	emailTemplate := buildEmail(reportLink)
-
 	// Email configuration
 	mailDomain := "corpadds.com"
 	sender := "autotest@yourdomain.com"
@@ -115,14 +110,16 @@ func main() {
 	subject := fmt.Sprintf("Cypress Test Report - Build %s", buildNum)
 	attachmentPath := ""
 
+	reportLink := fmt.Sprintf("%s%s/payroll-intelliigence-ui", reportHost, buildNum)
+	reportInput := fmt.Sprintf("%s%s/execution/node/3/ws/cypress/reports/index.json", reportHost, buildNum)
+	// Generate the email template
+	emailTemplate := buildEmail(reportLink)
 	// Initialize AutoTestReport
 	autoTestReport := testreport.NewAutoTestReport(mailDomain, emailTemplate, nil)
-
 	// Generate and send the report
 	err := autoTestReport.GenerateAndSendReport(reportInput, sender, recipient, subject, attachmentPath)
 	if err != nil {
 		log.Fatalf("Failed to generate and send the report: %v", err)
 	}
-
 	fmt.Printf("Test report for build %s sent successfully!\n", buildNum)
 }

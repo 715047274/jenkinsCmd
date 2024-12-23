@@ -60,6 +60,9 @@ type ReportData struct {
 	Results []Result `json:"results"`
 }
 
+// Compile-time check to ensure CypressParser implements ReportParser
+var _ ReportParser = (*CypressParser)(nil)
+
 func (cr *CypressParser) LoadData(input string) error {
 	var data []byte
 	var err error

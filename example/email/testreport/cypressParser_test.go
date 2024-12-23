@@ -42,7 +42,7 @@ func TestLoadData(t *testing.T) {
 		]
 	}`
 
-	cr := &CypressReport{}
+	cr := &CypressParser{}
 	err := cr.LoadData(jsonInput)
 	if err != nil {
 		t.Fatalf("LoadData failed: %v", err)
@@ -74,7 +74,7 @@ func TestLoadData(t *testing.T) {
 }
 
 func TestGenerateJSONData(t *testing.T) {
-	cr := &CypressReport{
+	cr := &CypressParser{
 		Stats: map[string]interface{}{
 			"suites":         5,
 			"tests":          10,

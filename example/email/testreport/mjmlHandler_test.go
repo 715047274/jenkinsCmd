@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateHTMLContent(t *testing.T) {
-	mjmlClient := MJMLClient{
+	MjmlHandler := MjmlHandler{
 		DefaultTemplate: `
 <mjml>
   <mj-body>
@@ -22,7 +22,7 @@ func TestCreateHTMLContent(t *testing.T) {
 
 	jsonData := `{"Name": "Test User"}`
 
-	htmlContent, err := mjmlClient.CreateHTMLContent("", jsonData)
+	htmlContent, err := MjmlHandler.CreateHTMLContent("", jsonData)
 	if err != nil {
 		t.Fatalf("CreateHTMLContent failed: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestCreateHTMLContent(t *testing.T) {
 }
 
 func TestCreateHTMLContentWithInvalidJSON(t *testing.T) {
-	mjmlClient := MJMLClient{
+	MjmlHandler := MjmlHandler{
 		DefaultTemplate: `
 <mjml>
   <mj-body>
@@ -49,14 +49,14 @@ func TestCreateHTMLContentWithInvalidJSON(t *testing.T) {
 
 	invalidJsonData := `{"Name": "Test User"`
 
-	_, err := mjmlClient.CreateHTMLContent("", invalidJsonData)
+	_, err := MjmlHandler.CreateHTMLContent("", invalidJsonData)
 	if err == nil {
 		t.Fatal("Expected CreateHTMLContent to fail due to invalid JSON, but it succeeded")
 	}
 }
 
 func TestCreateHTMLContentWithTemplateError(t *testing.T) {
-	mjmlClient := MJMLClient{
+	MjmlHandler := MjmlHandler{
 		DefaultTemplate: `
 <mjml>
   <mj-body>
@@ -71,14 +71,14 @@ func TestCreateHTMLContentWithTemplateError(t *testing.T) {
 
 	jsonData := `{"Name": "Test User"}`
 
-	_, err := mjmlClient.CreateHTMLContent("", jsonData)
+	_, err := MjmlHandler.CreateHTMLContent("", jsonData)
 	if err == nil {
 		t.Fatal("Expected CreateHTMLContent to fail due to template parsing error, but it succeeded")
 	}
 }
 
 func TestCreateHTMLContentWithComplex(t *testing.T) {
-	mjmlClient := MJMLClient{
+	MjmlHandler := MjmlHandler{
 		DefaultTemplate: `
 <mjml>
   <mj-body>
@@ -151,7 +151,7 @@ func TestCreateHTMLContentWithComplex(t *testing.T) {
 
 	expectedSubstring := `<td>Pending</td><td>3</td>`
 
-	htmlContent, err := mjmlClient.CreateHTMLContent("", jsonData)
+	htmlContent, err := MjmlHandler.CreateHTMLContent("", jsonData)
 	fmt.Println(htmlContent)
 	if err != nil {
 		t.Fatalf("CreateHTMLContent failed: %v", err)
@@ -163,7 +163,7 @@ func TestCreateHTMLContentWithComplex(t *testing.T) {
 	}
 }
 
-func TestMJMLClientWithModAndAdd(t *testing.T) {
+func TestMjmlHandlerWithModAndAdd(t *testing.T) {
 	// Test template with mod and add functions
 	templateInput := `
 	<mjml>
@@ -197,11 +197,11 @@ func TestMJMLClientWithModAndAdd(t *testing.T) {
 		"Values": [1, 2, 3, 4, 5]
 	}`
 
-	// Create an MJMLClient instance
-	mjmlClient := MJMLClient{}
+	// Create an MjmlHandler instance
+	MjmlHandler := MjmlHandler{}
 
 	// Generate the HTML content
-	output, err := mjmlClient.CreateHTMLContent(templateInput, jsonData)
+	output, err := MjmlHandler.CreateHTMLContent(templateInput, jsonData)
 	if err != nil {
 		t.Fatalf("Failed to generate HTML content: %v", err)
 	}
@@ -221,7 +221,7 @@ func TestMJMLClientWithModAndAdd(t *testing.T) {
 		}
 	}
 }
-func TestMJMLClientWithGridView(t *testing.T) {
+func TestMjmlHandlerWithGridView(t *testing.T) {
 	// Test template to create a grid view with rows of 4 columns
 	templateInput := `
 	<mjml>
@@ -252,11 +252,11 @@ func TestMJMLClientWithGridView(t *testing.T) {
 		"Numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 	}`
 
-	// Create an MJMLClient instance
-	mjmlClient := MJMLClient{}
+	// Create an MjmlHandler instance
+	MjmlHandler := MjmlHandler{}
 
 	// Generate the HTML content
-	output, err := mjmlClient.CreateHTMLContent(templateInput, jsonData)
+	output, err := MjmlHandler.CreateHTMLContent(templateInput, jsonData)
 	if err != nil {
 		t.Fatalf("Failed to generate HTML content: %v", err)
 	}
