@@ -110,7 +110,7 @@ func buildHeader() string {
 
 func main() {
 	// Configuration
-	buildNum := "97"
+	buildNum := "99"
 	projectName := "Payroll_Intelligence_UI_Cypress_Test" // "sanity-test-payroll-ui"
 	reportHost := fmt.Sprintf("http://nan4dfc1tst15.custadds.com:8080/job/%s/", projectName)
 	// Email configuration
