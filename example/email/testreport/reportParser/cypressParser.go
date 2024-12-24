@@ -1,4 +1,4 @@
-package testreport
+package reportParser
 
 import (
 	"encoding/json"

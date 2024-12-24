@@ -1,13 +1,13 @@
-package testreport
+package mailer
 
 import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"mime/multipart"
 	"net"
 	"net/smtp"
+	"os"
 )
 
 type MailClient struct {
@@ -53,7 +53,7 @@ func (mc *MailClient) SendHTMLEmailWithAttachment(sender, recipient, subject, ht
 	htmlPart.Write([]byte(htmlContent))
 
 	if attachmentPath != "" {
-		fileContent, _ := ioutil.ReadFile(attachmentPath)
+		fileContent, _ := os.ReadFile(attachmentPath)
 		attachmentPart, _ := writer.CreatePart(map[string][]string{
 			"Content-Disposition": {fmt.Sprintf("attachment; filename=\"%s\"", attachmentPath)},
 		})

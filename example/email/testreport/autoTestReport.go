@@ -3,19 +3,22 @@ package testreport
 import (
 	"fmt"
 	"strings"
+	"test-report/testreport/mailer"
+	"test-report/testreport/mjmlHandler"
+	"test-report/testreport/reportParser"
 )
 
 // AutoTestReport represents the main structure for generating and sending test reports.
 type AutoTestReport struct {
-	MailClient  *MailClient
-	MjmlHandler *MjmlHandler
+	MailClient  *mailer.MailClient
+	MjmlHandler *mjmlHandler.MjmlHandler
 }
 
 // NewAutoTestReport initializes a AutoTestReport with the necessary clients.
 func NewAutoTestReport(mailDomain, defaultTemplate string, defaultData map[string]string) *AutoTestReport {
 	return &AutoTestReport{
-		MailClient: &MailClient{Domain: mailDomain},
-		MjmlHandler: &MjmlHandler{
+		MailClient: &mailer.MailClient{Domain: mailDomain},
+		MjmlHandler: &mjmlHandler.MjmlHandler{
 			DefaultTemplate: defaultTemplate,
 			DefaultData:     defaultData,
 		},
@@ -23,10 +26,19 @@ func NewAutoTestReport(mailDomain, defaultTemplate string, defaultData map[strin
 }
 
 // reportParserManager determines the appropriate parser based on the input.
-func (tr *AutoTestReport) reportParserManager(input string) ReportParser {
+func (tr *AutoTestReport) reportParserManager(input string) reportParser.ReportParser {
+	projectNames := []string{
+		"payroll_intelligence_ui_cypress_test",
+		"Payroll_Intelligence_UI_Cypress_Test_Release_Branch",
+		"sanity-test-payroll-ui",
+		"Qa-Sanity-Test-Payroll-UI",
+	}
+
 	switch {
-	case strings.Contains(strings.ToLower(input), "cypress"):
-		return &CypressParser{}
+	case Some(projectNames, func(keyword string) bool {
+		return strings.Contains(strings.ToLower(input), strings.ToLower(keyword))
+	}):
+		return &reportParser.CypressParser{}
 	default:
 		fmt.Printf("No suitable parser found for input: %s\n", input)
 		return nil
@@ -61,4 +73,13 @@ func (tr *AutoTestReport) GenerateAndSendReport(input, sender, recipient, subjec
 
 	// Send the email
 	return tr.MailClient.SendHTMLEmailWithAttachment(sender, recipient, subject, htmlContent, attachmentPath)
+}
+
+func Some(slice []string, predicate func(string) bool) bool {
+	for _, item := range slice {
+		if predicate(item) {
+			return true
+		}
+	}
+	return false
 }

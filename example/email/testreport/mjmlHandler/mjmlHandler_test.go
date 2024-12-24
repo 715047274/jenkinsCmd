@@ -1,4 +1,4 @@
-package testreport
+package mjmlHandler
 
 import (
 	"fmt"

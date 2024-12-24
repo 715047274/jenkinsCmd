@@ -1,4 +1,4 @@
-package testreport
+package reportParser
 
 // ReportParser defines the interface for parsers.
 type ReportParser interface {

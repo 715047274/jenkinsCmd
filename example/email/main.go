@@ -111,18 +111,20 @@ func buildHeader() string {
 func main() {
 	// Configuration
 	buildNum := "97"
-	projectName := "Payroll_Intelligence_UI_Cypress_Test"
+	projectName := "Payroll_Intelligence_UI_Cypress_Test" // "sanity-test-payroll-ui"
 	reportHost := fmt.Sprintf("http://nan4dfc1tst15.custadds.com:8080/job/%s/", projectName)
 	// Email configuration
+	//
 	mailDomain := "corpadds.com"
 	sender := "autotest@yourdomain.com"
 	recipient := "k.zhang@dayforce.com"
-	subject := fmt.Sprintf("Cypress Test Report - Build %s", buildNum)
+	subject := fmt.Sprintf("%s - Build %s", projectName, buildNum)
 	attachmentPath := ""
 
+	// ----- report
 	reportLink := fmt.Sprintf("%s%s/payroll-intelliigence-ui", reportHost, buildNum)
 	//reportInput := fmt.Sprintf("%s%s/execution/node/3/ws/cypress/reports/index.json", reportHost, buildNum)
-	reportInput := fmt.Sprintf("%s%s/payroll-intelliigence-ui/index.json", reportHost, buildNum)
+	reportInput := fmt.Sprintf("%s/index.json", reportLink)
 
 	// Generate the email template
 	emailTemplate := buildEmail(reportLink)

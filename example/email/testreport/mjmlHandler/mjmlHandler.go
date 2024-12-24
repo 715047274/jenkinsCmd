@@ -1,4 +1,4 @@
-package testreport
+package mjmlHandler
 
 import (
 	"bytes"
@@ -69,9 +69,6 @@ func (mj *MjmlHandler) CreateHTMLContent(templateInput string, jsonData string) 
 	if err := t.Execute(&processedTemplate, parsedData); err != nil {
 		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
-	// Log the generated MJML template
-	//fmt.Println("Generated MJML Template:")
-	//fmt.Println(processedTemplate.String())
 
 	// Convert the processed MJML template to HTML
 	output, err := mjml.ToHTML(context.Background(), processedTemplate.String(), mjml.WithMinify(true))
