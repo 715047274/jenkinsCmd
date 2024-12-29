@@ -2,6 +2,7 @@ package mjmlHandler
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 )
@@ -221,6 +222,7 @@ func TestMjmlHandlerWithModAndAdd(t *testing.T) {
 		}
 	}
 }
+
 func TestMjmlHandlerWithGridView(t *testing.T) {
 	// Test template to create a grid view with rows of 4 columns
 	templateInput := `
@@ -274,5 +276,48 @@ func TestMjmlHandlerWithGridView(t *testing.T) {
 		if !strings.Contains(output, expected) {
 			t.Errorf("Output missing expected value: %s\nOutput:\n%s", expected, output)
 		}
+	}
+}
+
+func TestMjmlHandlerWithTemplateFile(t *testing.T) {
+	// Step 1: Create a temporary template file
+	templateContent := `
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#333333" align="center">Hello, {{ .Name }}!</mj-text>
+        <mj-divider border-color="#F45E43"></mj-divider>
+        <mj-text font-size="16px">This is a test email template.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`
+	templateFile := "test.tmpl"
+	err := os.WriteFile(templateFile, []byte(templateContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to create template file: %v", err)
+	}
+	defer os.Remove(templateFile) // Clean up the file after the test
+
+	// Step 2: Set up the test data
+	testData := `{
+		"Name": "Test User"
+	}`
+
+	// Step 3: Initialize MjmlHandler and call CreateHTMLContent
+	mjmlHandler := MjmlHandler{}
+	htmlContent, err := mjmlHandler.CreateHTMLContent(templateFile, testData)
+	if err != nil {
+		t.Fatalf("Failed to generate HTML content: %v", err)
+	}
+
+	// Step 4: Debugging: Log the generated content
+	// t.Logf("Generated HTML content: %s", htmlContent)
+
+	// Step 5: Validate the output
+	expectedOutputSnippet := `Hello, Test User!`
+	if !strings.Contains(htmlContent, expectedOutputSnippet) {
+		t.Errorf("Output missing expected content: %s\nGenerated output:\n%s", expectedOutputSnippet, htmlContent)
 	}
 }
