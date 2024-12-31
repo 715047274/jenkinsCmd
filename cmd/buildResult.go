@@ -1,11 +1,9 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package main
 
 import (
-	"github.com/715047274/jenkinsCmd/internal"
-
 	"github.com/spf13/cobra"
 )
 
@@ -21,11 +19,11 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// fmt.Println("buildResult called")
-		inputFile, _ := cmd.Flags().GetString("input")
-		outputDir, _ := cmd.Flags().GetString("output")
+		//inputFile, _ := cmd.Flags().GetString("input")
+		//outputDir, _ := cmd.Flags().GetString("output")
 
 		// Call your internal function to generate HTML from Cypress test results
-		internal.GenerateHTML(inputFile, outputDir)
+		// internal.GenerateHTML(inputFile, outputDir)
 	},
 }
 
