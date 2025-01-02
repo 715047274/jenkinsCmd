@@ -14,6 +14,8 @@ func SetupJenkinsRoutes(r *gin.Engine) {
 		jenkinsGroup.GET("/status/:jobName", getStatusHandler)
 		jenkinsGroup.GET("/logs/:jobName/:buildNumber", getLogsHandler)
 		jenkinsGroup.DELETE("/delete/:jobName", deleteJobHandler)
+		// jenkinsGroup.POST("/sequence", sequenceJobHandler)
+
 	}
 }
 
@@ -120,3 +122,72 @@ func deleteJobHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Job deleted successfully"})
 }
+
+//func sequenceJobHandler(c *gin.Context) gin.HandlerFunc {
+//	return func(c *gin.Context) {
+//		var req struct {
+//			JobName     string `json:"jobName" binding:"required"`
+//			Jenkinsfile string `json:"jenkinsfile" binding:"required"`
+//		}
+//
+//		if err := c.ShouldBindJSON(&req); err != nil {
+//			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//			return
+//		}
+//
+//		// Step 1: Check if the job exists
+//		jobExists, err := utils.JobExists(cfg, req.JobName)
+//		if err != nil {
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to check job existence: %v", err)})
+//			return
+//		}
+//
+//		if !jobExists {
+//			// Step 2: Create the job if it doesn't exist
+//			err := utils.CreateJob(cfg, req.JobName, req.Jenkinsfile)
+//			if err != nil {
+//				c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create job: %v", err)})
+//				return
+//			}
+//		}
+//
+//		// Step 3: Check if the job is running
+//		isRunning, err := utils.IsJobRunning(cfg, req.JobName)
+//		if err != nil {
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to check job running status: %v", err)})
+//			return
+//		}
+//
+//		if !isRunning {
+//			// Step 4: Trigger the job if it's not already running
+//			err = utils.TriggerJob(cfg, req.JobName)
+//			if err != nil {
+//				c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to trigger job: %v", err)})
+//				return
+//			}
+//		}
+//
+//		// Step 5: Get the build number
+//		buildNumber, err := utils.GetLastBuildNumber(cfg, req.JobName)
+//		if err != nil {
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to get last build number: %v", err)})
+//			return
+//		}
+//
+//		// Step 6: Poll for logs asynchronously
+//		resultChan := make(chan string)
+//		errorChan := make(chan error)
+//
+//		go utils.WaitForBuildAndGetLogs(cfg, req.JobName, buildNumber, resultChan, errorChan)
+//
+//		select {
+//		case logs := <-resultChan:
+//			c.JSON(http.StatusOK, gin.H{
+//				"message": "Job executed successfully",
+//				"logs":    logs,
+//			})
+//		case err := <-errorChan:
+//			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to execute job: %v", err)})
+//		}
+//	}
+//}
