@@ -9,6 +9,7 @@ import (
 func ConfigMiddleware(cfg config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("config", cfg)
+		// log.Panicln("------MiddleWare Called-------")
 		c.Next()
 	}
 }

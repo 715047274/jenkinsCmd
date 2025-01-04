@@ -1,8 +1,8 @@
 package domain
 
 type Job struct {
-	Name        string
-	Jenkinsfile string
+	Name        string `json:"jobName"`
+	Jenkinsfile string `json:"jenkinsfile"`
 }
 
 type JobService interface {
