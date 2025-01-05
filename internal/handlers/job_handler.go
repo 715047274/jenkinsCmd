@@ -4,6 +4,7 @@ import (
 	"github.com/715047274/jenkinsCmd/internal/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type JobHandler struct {
@@ -93,7 +94,34 @@ func (h *JobHandler) createJob(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Job created successfully"})
 
 }
-func (h *JobHandler) triggerJob(c *gin.Context) {}
-func (h *JobHandler) getStatus(c *gin.Context)  {}
-func (h *JobHandler) getLogs(c *gin.Context)    {}
-func (h *JobHandler) deleteJob(c *gin.Context)  {}
+func (h *JobHandler) triggerJob(c *gin.Context) {
+	var req struct {
+		JobName string `json:"jobName" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.service.TriggerJob(req.JobName); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Job triggered successfully"})
+}
+func (h *JobHandler) getStatus(c *gin.Context) {}
+func (h *JobHandler) getLogs(c *gin.Context) {
+	jobName := c.Param("jobName")
+	buildNumber, _ := strconv.Atoi(c.Param("buildNumber"))
+
+	logs, err := h.service.GetJobLogs(jobName, buildNumber)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"logs": logs})
+}
+func (h *JobHandler) deleteJob(c *gin.Context) {}
