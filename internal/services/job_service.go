@@ -10,6 +10,7 @@ type jobService struct {
 }
 
 func NewJobService(adapter *adapters.JenkinsAdapter) domain.JobService {
+
 	return &jobService{adapter: adapter}
 }
 
@@ -18,9 +19,8 @@ func (s *jobService) TriggerJob(jobName string) error {
 	return s.adapter.TriggerJob(jobName)
 }
 
-func (s *jobService) GetJobLogs(jobName string, buildNumber int) (string, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *jobService) GetJobLogs(jobName, buildNumber string) (string, error) {
+	return s.adapter.GetBuildLogs(jobName, buildNumber)
 }
 
 func (s *jobService) CheckJobExists(jobName string) (bool, error) {

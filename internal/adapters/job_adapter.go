@@ -118,7 +118,7 @@ func (a *JenkinsAdapter) GetBuildStatus(jobName string) (map[string]interface{},
 }
 
 func (a *JenkinsAdapter) GetBuildLogs(jobName, buildNumber string) (string, error) {
-	url := fmt.Sprintf("%s/job/%s/%s/consoleText", a.cfg.GetJenkinsURL(), jobName, buildNumber)
+	url := fmt.Sprintf("%s/job/%s/%d/consoleText", a.cfg.GetJenkinsURL(), jobName, buildNumber)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

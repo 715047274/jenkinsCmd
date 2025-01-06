@@ -8,7 +8,7 @@ type Job struct {
 type JobService interface {
 	CreateJob(job Job) error
 	TriggerJob(jobName string) error
-	GetJobLogs(jobName string, buildNumber int) (string, error)
+	GetJobLogs(jobName string, buildNumber string) (string, error)
 	CheckJobExists(jobName string) (bool, error)
 	CheckJobRunning(jobName string) (bool, error)
 }
