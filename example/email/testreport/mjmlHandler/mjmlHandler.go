@@ -16,6 +16,21 @@ import (
 type MjmlHandler struct {
 	DefaultTemplate string
 	DefaultData     map[string]string
+	CustomFuncMap   template.FuncMap
+}
+
+// RegisterFunc allows registering custom functions to the handler's function map.
+// If the key already exists, the new function will override the existing one.
+func (mj *MjmlHandler) RegisterFunc(name string, function interface{}) {
+	if mj.CustomFuncMap == nil {
+		mj.CustomFuncMap = make(template.FuncMap)
+	}
+
+	if _, exists := mj.CustomFuncMap[name]; exists {
+		fmt.Printf("Function with name '%s' already exists. Overriding with the new function.\n", name)
+	}
+
+	mj.CustomFuncMap[name] = function
 }
 
 // CreateHTMLContent generates HTML content from the provided MJML template and JSON data.
@@ -23,18 +38,15 @@ func (mj *MjmlHandler) CreateHTMLContent(templateInput string, jsonData string) 
 	var tmpl string
 	// Determine if templateInput is a filepath or a direct string
 	if strings.HasSuffix(templateInput, ".tmpl") {
-		// Read the template file
 		content, err := os.ReadFile(templateInput)
 		if err != nil {
 			return "", fmt.Errorf("failed to read template file: %w", err)
 		}
 		tmpl = string(content)
 	} else {
-		// Use the input string as the template
 		tmpl = templateInput
 	}
-	// Use the provided template or fall back to the default
-	// If no input is provided, fall back to the default template
+
 	if tmpl == "" {
 		tmpl = mj.DefaultTemplate
 	}
@@ -48,8 +60,8 @@ func (mj *MjmlHandler) CreateHTMLContent(templateInput string, jsonData string) 
 	// Convert float64 to int for numeric values
 	parsedData := convertFloatsToInts(rawData)
 
-	// Define custom functions
-	funcMap := template.FuncMap{
+	// Default template functions
+	defaultFuncMap := template.FuncMap{
 		"mod": func(a, b int) int {
 			return a % b
 		},
@@ -58,8 +70,17 @@ func (mj *MjmlHandler) CreateHTMLContent(templateInput string, jsonData string) 
 		},
 	}
 
-	// Parse the MJML template using html/template with custom functions
-	t, err := template.New("mjml").Funcs(funcMap).Parse(tmpl)
+	// Merge default functions with custom functions
+	mergedFuncMap := make(template.FuncMap)
+	for k, v := range defaultFuncMap {
+		mergedFuncMap[k] = v
+	}
+	for k, v := range mj.CustomFuncMap {
+		mergedFuncMap[k] = v
+	}
+
+	// Parse the MJML template using html/template with merged functions
+	t, err := template.New("mjml").Funcs(mergedFuncMap).Parse(tmpl)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template: %w", err)
 	}

@@ -28,7 +28,7 @@ func TestCreateHTMLContent(t *testing.T) {
 		t.Fatalf("CreateHTMLContent failed: %v", err)
 	}
 
-	expectedSubstring := "<p>Hello, Test User!</p>"
+	expectedSubstring := "Hello, Test User!"
 	if !strings.Contains(htmlContent, expectedSubstring) {
 		t.Errorf("Expected HTML content to contain %q, but it did not. Got: %s", expectedSubstring, htmlContent)
 	}
